@@ -1,21 +1,106 @@
+# Customized LVGL Simulator Project for Windows
+
+This project is a pre-configured and pre-built example of a working LVGL Simulator on Windows. Solely setting up the project according to the sparse (and frankly, incomplete) documentation will result in CMake configuration errors and an undetectable SDL installation. The following are the steps taken to *actually* get the project to compile on Windows.
+
+1. Clone the PC project and the related sub modules:
+
+```bash
+git clone --recursive https://github.com/lvgl/lv_port_pc_vscode
+```
+
+2. Open the project by double clicking on `simulator.code-workspace` or opening it with `File/Open Workspace from File`.
+3. Install the recommended plugins.
+4. Choose a compiler. In this example, we will be using `MinGW (gcc)` on Windows.
+5. **Ensure** you have `vcpkg` installed. Note your `vcpkg` install location. Then, install `SDL` through `vcpkg`.\
+   **Note:** Install the correct `SDL` target according to your chosen compiler.\
+   `sdl2:x64-mingw-dynamic` for `MinGW (gcc)`\
+   `sdl2:x64-windows` for `MSVC`
+6. Add a `CMakePresets.json` file to the project root. This will tell the project where `vcpkg` and `SDL` is located.
+
+```CMake
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "mingw",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic"
+      }
+    }
+  ]
+}
+```
+**Note:** `name` can be anything. In this example `generator` and `VCPKG_TARGET_TRIPLET` is set for `MinGW (gcc)` specifically. If you wish to use `MSVC` or any other compiler, they must be changed accordingly.\
+`CMAKE_TOOLCHAIN_FILE` must be set to your `vcpkg` install path, if it is not installed under `C:/`.
+
+7. In `CMakeLists.txt`, add the following code under the `add_executable(...)` code block to ensure SDL is copied next to our executable after building.
+
+```CMake
+...
+
+add_executable(main ${MAIN_SOURCES})
+target_compile_definitions(main PRIVATE LV_CONF_INCLUDE_SIMPLE)
+target_link_libraries(main ${MAIN_LIBS})
+
+# Ensure that any required DLLs are copied to the output directory on Windows.
+# This is necessary for SDL2 and any other dynamic libraries that the application depends on.
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_RUNTIME_DLLS:main>
+        $<TARGET_FILE_DIR:main>
+    COMMAND_EXPAND_LISTS
+)
+
+...
+```
+
+8. In `simulator.code-workspace`, set `miDebuggerPath` to your `gdb` path under the `windows` configuration in the `launch` section. In this `MinGW (gcc)` example, `gdb` is found in its `msys64` install location.
+
+```JSON with Comments
+"launch": {
+  "version": "0.2.0",
+  "configurations": [
+    {
+    ...
+      "windows": {
+        "MIMode": "gdb",
+        // Path may vary. Change accordingly.
+        "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe"
+      }
+    },
+    ...
+  ],
+},
+```
+
+9. In a terminal, run `cmake --preset mingw`.
+10. To run and debug, select `Debug LVGL demo with gdb`.
+
+Edited 15/06/2026 by G.C. Looa.
+
+Below is the README from the original repository.
+
 # VSCode Simulator project for LVGL
 
 [LVGL](https://github.com/lvgl/lvgl) is written mainly for microcontrollers and embedded systems, however you can run the library **on your PC** as well without any embedded hardware. The code written on PC can be simply copied when your are using an embedded system.
 
-This project is pre-configured for VSCode and should work work on Windows, Linux and MacOs as well. FreeRTOS is also included and can be optionally enabled to better simulate embedded system's behavior. 
+This project is pre-configured for VSCode and should work work on Windows, Linux and MacOs as well. FreeRTOS is also included and can be optionally enabled to better simulate embedded system's behavior.
 
 ## Get started
 
 ### Install SDL and the build tools
 
 - **Windows (vcpkg):** `vcpkg install sdl2`  (`vcpkg` can be installed from [https://github.com/microsoft/vcpkg](https://github.com/microsoft/vcpkg)) Also install either MinGW or another compiler and `cmake`.
-- **macOS (Homebrew):** `brew install sdl2 cmake make`  
-- **Linux:**  
-  - **Debian/Ubuntu:** `sudo apt install build-essential cmake libsdl2-dev`  
-  - **Arch:** `sudo pacman -S base-devel cmake sdl2`  
-  - **Fedora:** `sudo dnf install @development-tools cmake SDL2-devel`  
+- **macOS (Homebrew):** `brew install sdl2 cmake make`
+- **Linux:**
+  - **Debian/Ubuntu:** `sudo apt install build-essential cmake libsdl2-dev`
+  - **Arch:** `sudo pacman -S base-devel cmake sdl2`
+  - **Fedora:** `sudo dnf install @development-tools cmake SDL2-devel`
 - **Manual Installation of SDL:** Download from [SDL’s website](https://github.com/libsdl-org/SDL/releases) and place headers/libraries in your project.
-- **Verify Installation:** `sdl2-config --version`, `cmake --version`, `gcc --version`, `g++ --version` (should return the installed version).  
+- **Verify Installation:** `sdl2-config --version`, `cmake --version`, `gcc --version`, `g++ --version` (should return the installed version).
 
 ### Get the PC project
 
@@ -70,7 +155,7 @@ To correctly configure the project, the RTOS (Real-Time Operating System) requir
 This configuration ensures that the SDL window is displayed in a timely manner. If this value is reduced, it may cause significant delays in the SDL window's appearance. If the allocated heap memory is too small, the window may fail to appear altogether.
 Therefore, it is crucial to allocate sufficient heap memory to ensure smooth execution and debugging experience.
 
-### Enable FreeRTOS 
+### Enable FreeRTOS
 To enable the rtos part of this project select in lv_conf.h `#define LV_USE_OS   LV_OS_NONE` to `#define LV_USE_OS  LV_OS_FREERTOS`
 Additionaly you have to enable the compilation of all FreeRTOS Files by turning on the `option(USE_FREERTOS "Enable FreeRTOS" OFF)` in the CMakeLists.txt file or
 by enabling the same flag from the command line when bootstrapping `cmake`:
@@ -105,7 +190,7 @@ int main(int argc, char **argv)
   /* - lv_demo_stress(); */
   /* - lv_example_label_1(); */
   /* - etc. */
-  lv_demo_widgets(); 
+  lv_demo_widgets();
 
   while(1) {
       /* ... */
@@ -139,11 +224,11 @@ make
 sudo make install
 ```
 ### (RT)OS support
-Works with any OS like pthred, Windows, FreeRTOS, etc. It has build in support for FreeRTOS. 
+Works with any OS like pthred, Windows, FreeRTOS, etc. It has build in support for FreeRTOS.
 
 ## Test
-This project is configured for [VSCode](https://code.visualstudio.com) and is tested on: 
-- Ubuntu Linux 
+This project is configured for [VSCode](https://code.visualstudio.com) and is tested on:
+- Ubuntu Linux
 - Windows WSL (Ubuntu Linux)
 
 It requires a working version of GCC, GDB and make in your path.
@@ -180,10 +265,10 @@ In your main.c, include the UI header from your LVGL Pro project and replace the
 int main(void) {
 
     /*Initialization code for LVGL*/
-    
+
     /* Initialize the LVGL Pro UI */
     ui_init("<path-to-lvgl-pro-project>");
-    
+
     /* ... rest of your application ...*/
 }
 ```
