@@ -12,6 +12,7 @@
 lv_style_t style_base;
 lv_style_t style_base_button;
 lv_style_t style_statusbar;
+lv_style_t style_statusbar_part;
 lv_style_t style_content;
 lv_style_t style_navbar;
 lv_style_t style_navbar_button;
@@ -44,6 +45,12 @@ void style_init(void)
 
     lv_style_init(&style_statusbar);
     lv_style_set_bg_grad(&style_statusbar, &grad_dsc_statusbar);
+
+    lv_style_init(&style_statusbar_part);
+    lv_style_set_bg_opa(&style_statusbar_part, LV_OPA_0);
+    lv_style_set_pad_all(&style_statusbar_part, 20);
+    lv_style_set_pad_row(&style_statusbar_part, 10);
+    lv_style_set_pad_column(&style_statusbar_part, 10);
 
     lv_style_init(&style_content);
     lv_style_set_bg_grad(&style_content, &grad_dsc_content);

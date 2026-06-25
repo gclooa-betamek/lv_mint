@@ -120,42 +120,11 @@ int main(int argc, char **argv)
   lv_obj_set_flex_flow(screen_navbar, LV_FLEX_FLOW_ROW);
   lv_obj_set_flex_align(screen_navbar, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-  /* Create navbar items */
-  lv_obj_t * navbar_radio = lv_btn_create(screen_navbar);
-  lv_obj_set_height(navbar_radio, LV_PCT(100));
-  lv_obj_set_flex_grow(navbar_radio, 1);
-  lv_obj_add_style(navbar_radio, &style_base_button, LV_PART_MAIN);
+  /* Create statusbar */
+  statusbar_init(screen_statusbar);
 
-  lv_obj_t * navbar_media = lv_btn_create(screen_navbar);
-  lv_obj_set_height(navbar_media, LV_PCT(100));
-  lv_obj_set_flex_grow(navbar_media, 1);
-  lv_obj_add_style(navbar_media, &style_base_button, LV_PART_MAIN);
-
-  lv_obj_t * navbar_phone = lv_btn_create(screen_navbar);
-  lv_obj_set_height(navbar_phone, LV_PCT(100));
-  lv_obj_set_flex_grow(navbar_phone, 1);
-  lv_obj_add_style(navbar_phone, &style_base_button, LV_PART_MAIN);
-
-  lv_obj_t * navbar_settings = lv_btn_create(screen_navbar);
-  lv_obj_set_height(navbar_settings, LV_PCT(100));
-  lv_obj_set_flex_grow(navbar_settings, 1);
-  lv_obj_add_style(navbar_settings, &style_base_button, LV_PART_MAIN);
-
-  lv_obj_t * label_radio = lv_label_create(navbar_radio);
-  lv_label_set_text(label_radio, LV_SYMBOL_AUDIO "   Radio");
-  lv_obj_center(label_radio);
-
-  lv_obj_t * label_media = lv_label_create(navbar_media);
-  lv_label_set_text(label_media, LV_SYMBOL_LIST "   Media");
-  lv_obj_center(label_media);
-
-  lv_obj_t * label_phone = lv_label_create(navbar_phone);
-  lv_label_set_text(label_phone, LV_SYMBOL_BLUETOOTH "   Phone");
-  lv_obj_center(label_phone);
-
-  lv_obj_t * label_settings = lv_label_create(navbar_settings);
-  lv_label_set_text(label_settings, LV_SYMBOL_SETTINGS "   Settings");
-  lv_obj_center(label_settings);
+  /* Create navbar buttons */
+  navbar_init(screen_navbar);
 
   while(1) {
     /* Periodically call the lv_task handler.

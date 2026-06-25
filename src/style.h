@@ -11,6 +11,7 @@
 extern lv_style_t style_base;
 extern lv_style_t style_base_button;
 extern lv_style_t style_statusbar;
+extern lv_style_t style_statusbar_part;
 extern lv_style_t style_content;
 extern lv_style_t style_navbar;
 extern lv_style_t style_navbar_button;

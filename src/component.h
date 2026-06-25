@@ -8,7 +8,8 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-
-void component_init(void);
+void statusbar_init(lv_obj_t * screen_statusbar);
+void content_init(lv_obj_t * screen_content);
+void navbar_init(lv_obj_t * screen_navbar);
 
 #endif
