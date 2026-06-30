@@ -15,6 +15,7 @@ extern lv_style_t style_statusbar_part;
 extern lv_style_t style_content;
 extern lv_style_t style_navbar;
 extern lv_style_t style_navbar_button;
+extern lv_style_t style_navbar_button_hover;
 
 void style_init(void);
 

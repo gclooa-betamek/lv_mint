@@ -16,6 +16,7 @@ lv_style_t style_statusbar_part;
 lv_style_t style_content;
 lv_style_t style_navbar;
 lv_style_t style_navbar_button;
+lv_style_t style_navbar_button_hover;
 
 static bool style_init_flag = false;
 
@@ -61,6 +62,12 @@ void style_init(void)
     lv_style_set_pad_column(&style_navbar, 10);
 
     lv_style_init(&style_navbar_button);
+    lv_style_set_text_color(&style_navbar_button, lv_color_make(0, 0, 0));
+    lv_style_set_bg_grad(&style_navbar_button, &grad_dsc_button);
+
+    lv_style_init(&style_navbar_button_hover);
+    lv_style_set_border_width(&style_navbar_button_hover, 5);
+    lv_style_set_border_color(&style_navbar_button_hover, lv_color_make(255, 255, 255));
 
     style_init_flag = true;
 }
