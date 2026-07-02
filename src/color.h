@@ -11,6 +11,7 @@
 extern lv_grad_dsc_t grad_dsc_statusbar;
 extern lv_grad_dsc_t grad_dsc_content;
 extern lv_grad_dsc_t grad_dsc_button;
+extern lv_grad_dsc_t grad_dsc_sky_blue;
 
 void color_init(void);
 

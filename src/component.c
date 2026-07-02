@@ -6,6 +6,7 @@
  */
 
 #include "lvgl/lvgl.h"
+#include "color.h"
 #include "component.h"
 #include "style.h"
 #include "util.h"
@@ -14,6 +15,11 @@ static bool statusbar_init_flag = false;
 static bool content_init_flag = false;
 static bool navbar_init_flag = false;
 
+/*******************
+ * MAIN COMPONENTS
+ *******************/
+
+/* Create status bar elements. */
 void statusbar_init(lv_obj_t * screen_statusbar)
 {
     if (statusbar_init_flag) return;
@@ -28,25 +34,31 @@ void statusbar_init(lv_obj_t * screen_statusbar)
         lv_obj_add_style(statusbar[i], &style_base, LV_PART_MAIN);
         lv_obj_add_style(statusbar[i], &style_statusbar_part, LV_PART_MAIN);
     }
+
+    /* Align WEATHER element to the left. */
     lv_obj_set_flex_align(statusbar[WEATHER], LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_t * label_weather = lv_label_create(statusbar[WEATHER]);
     lv_label_set_text(label_weather, "25°C");
 
+    /* Align CLOCK element to the center. */
     lv_obj_set_flex_align(statusbar[CLOCK], LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_t * label_clock = lv_label_create(statusbar[CLOCK]);
     lv_label_set_text(label_clock, " ");
 
+    /* Align SYMBOL element to the right. */
     lv_obj_set_flex_align(statusbar[SYMBOL], LV_FLEX_ALIGN_END, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_t * label_symbol_bluetooth = lv_label_create(statusbar[SYMBOL]);
     lv_label_set_text(label_symbol_bluetooth, LV_SYMBOL_BLUETOOTH);
     lv_obj_t * label_symbol_wifi = lv_label_create(statusbar[SYMBOL]);
     lv_label_set_text(label_symbol_wifi, LV_SYMBOL_WIFI);
 
+    /* Initiate the clock. */
     lv_timer_create(clock_timer_callback, 1000, label_clock);
 
     statusbar_init_flag = true;
 }
 
+/* Create content screens. Each screen is delegated to their own helper function below. */
 void content_init(lv_obj_t * screen_content)
 {
     if (content_init_flag) return;
@@ -56,9 +68,17 @@ void content_init(lv_obj_t * screen_content)
     content_phone(screen_content);
     content_settings(screen_content);
 
+    /* Display radio screen by default. */
+    lv_obj_add_flag(lv_obj_get_child(screen_content, RADIO), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lv_obj_get_child(screen_content, MEDIA), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lv_obj_get_child(screen_content, PHONE), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lv_obj_get_child(screen_content, SETTINGS), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(lv_obj_get_child(screen_content, RADIO), LV_OBJ_FLAG_HIDDEN);
+
     content_init_flag = true;
 }
 
+/* Create navigation bar buttons corresponding to each content screen. */
 void navbar_init(lv_obj_t * screen_navbar)
 {
     if (navbar_init_flag) return;
@@ -102,20 +122,27 @@ void navbar_init(lv_obj_t * screen_navbar)
         }
         lv_obj_center(label);
     }
+    lv_obj_add_state(navbar[RADIO], LV_STATE_CHECKED);
+
     navbar_init_flag = true;
 }
 
+/*******************
+ * CONTENT SCREENS
+ *******************/
+
 void content_radio(lv_obj_t * screen_content)
 {
+    /* Radio content container */
     lv_obj_t * radio = lv_obj_create(screen_content);
-    // lv_obj_set_layout(radio, LV_LAYOUT_FLEX);
-    lv_obj_set_size(radio, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(radio, &style_base, LV_PART_MAIN);
-    lv_obj_add_style(radio, &style_content, LV_PART_MAIN);
+    lv_obj_add_style(radio, &style_content_part, LV_PART_MAIN);
 
-    lv_obj_t * label = lv_label_create(radio);
-    lv_label_set_text(label, "98.5 FM");
-    lv_obj_center(label);
+    /* Channel display part */
+    lv_obj_t * part_channel = lv_obj_create(radio);
+    lv_obj_set_grid_cell(part_channel, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
+    lv_obj_set_style_bg_grad(part_channel, &grad_dsc_sky_blue, LV_PART_MAIN);
+    lv_obj_add_style(part_channel, &style_base_widget, LV_PART_MAIN);
 }
 
 void content_media(lv_obj_t * screen_content)

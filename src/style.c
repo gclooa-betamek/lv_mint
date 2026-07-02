@@ -9,11 +9,16 @@
 #include "style.h"
 #include "color.h"
 
+static const int32_t grid_col_dsc_array_0[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+static const int32_t grid_row_dsc_array_0[] = {LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_TEMPLATE_LAST};
+
 lv_style_t style_base;
 lv_style_t style_base_button;
+lv_style_t style_base_widget;
 lv_style_t style_statusbar;
 lv_style_t style_statusbar_part;
 lv_style_t style_content;
+lv_style_t style_content_part;
 lv_style_t style_navbar;
 lv_style_t style_navbar_button;
 lv_style_t style_navbar_button_hover;
@@ -44,6 +49,11 @@ void style_init(void)
     lv_style_set_shadow_offset_y(&style_base_button, 0);
     lv_style_set_shadow_opa(&style_base_button, 0);
 
+    lv_style_init(&style_base_widget);
+    lv_style_set_bg_color(&style_base_widget, lv_color_hex(0x1a1a1a));
+    lv_style_set_border_width(&style_base_widget, 0);
+    lv_style_set_radius(&style_base_widget, 20);
+
     lv_style_init(&style_statusbar);
     lv_style_set_bg_grad(&style_statusbar, &grad_dsc_statusbar);
 
@@ -55,6 +65,18 @@ void style_init(void)
 
     lv_style_init(&style_content);
     lv_style_set_bg_grad(&style_content, &grad_dsc_content);
+
+    lv_style_init(&style_content_part);
+    lv_style_set_bg_opa(&style_content_part, LV_OPA_0);
+    lv_style_set_size(&style_content_part, LV_PCT(100), LV_PCT(100));
+    lv_style_set_layout(&style_content_part, LV_LAYOUT_GRID);
+    lv_style_set_grid_column_dsc_array(&style_content_part, grid_col_dsc_array_0);
+    lv_style_set_grid_row_dsc_array(&style_content_part, grid_row_dsc_array_0);
+    lv_style_set_pad_top(&style_content_part, 10);
+    lv_style_set_pad_left(&style_content_part, 10);
+    lv_style_set_pad_right(&style_content_part, 10);
+    lv_style_set_pad_row(&style_content_part, 10);
+    lv_style_set_pad_column(&style_content_part, 10);
 
     lv_style_init(&style_navbar);
     lv_style_set_pad_all(&style_navbar, 10);

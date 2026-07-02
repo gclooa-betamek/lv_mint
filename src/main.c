@@ -107,19 +107,16 @@ int main(int argc, char **argv)
 
   screen_part[NAVBAR] = lv_obj_create(screen);
   lv_obj_set_layout(screen_part[NAVBAR], LV_LAYOUT_FLEX);
+  lv_obj_set_flex_flow(screen_part[NAVBAR], LV_FLEX_FLOW_ROW);
+  lv_obj_set_flex_align(screen_part[NAVBAR], LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
   lv_obj_set_size(screen_part[NAVBAR], SCREEN_WIDTH, LV_PCT(SCREEN_NAVBAR_PCT));
   lv_obj_add_style(screen_part[NAVBAR], &style_base, LV_PART_MAIN);
   lv_obj_add_style(screen_part[NAVBAR], &style_navbar, LV_PART_MAIN);
-  lv_obj_set_layout(screen_part[NAVBAR], LV_LAYOUT_FLEX);
-  lv_obj_set_flex_flow(screen_part[NAVBAR], LV_FLEX_FLOW_ROW);
-  lv_obj_set_flex_align(screen_part[NAVBAR], LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
   /* Create statusbar */
   statusbar_init(screen_part[STATUSBAR]);
-
   /* Create content */
   content_init(screen_part[CONTENT]);
-
   /* Create navbar */
   navbar_init(screen_part[NAVBAR]);
 
