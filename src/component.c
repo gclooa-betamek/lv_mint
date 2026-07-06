@@ -11,6 +11,29 @@
 #include "style.h"
 #include "util.h"
 
+static const char * label_navbar_button[SCREEN_CONTENT_COUNT] = {
+    LV_SYMBOL_HOME "   Radio",
+    LV_SYMBOL_AUDIO "   Media",
+    LV_SYMBOL_CALL "   Phone",
+    LV_SYMBOL_SETTINGS "   Settings"
+};
+
+static const char * label_channel_button[6] = {
+    "EIGHT FM",
+    "Ai FM",
+    "Hitz",
+    "Mix",
+    "Fly FM",
+    "Era"
+};
+
+static const char * label_radio_button[4] = {
+    LV_SYMBOL_PREV,
+    LV_SYMBOL_LEFT,
+    LV_SYMBOL_RIGHT,
+    LV_SYMBOL_NEXT,
+};
+
 static bool statusbar_init_flag = false;
 static bool content_init_flag = false;
 static bool navbar_init_flag = false;
@@ -99,27 +122,12 @@ void navbar_init(lv_obj_t * screen_navbar)
         lv_obj_set_height(navbar[i], LV_PCT(100));
         lv_obj_set_flex_grow(navbar[i], 1);
         lv_obj_add_style(navbar[i], &style_base_button, LV_PART_MAIN);
-        lv_obj_add_style(navbar[i], &style_navbar_button_hover, LV_STATE_HOVERED);
+        lv_obj_add_style(navbar[i], &style_base_button_hover, LV_STATE_HOVERED);
         lv_obj_add_style(navbar[i], &style_navbar_button, LV_STATE_CHECKED);
+
         lv_obj_t * label = lv_label_create(navbar[i]);
-        switch(i) {
-        case RADIO:
-            lv_label_set_text(label, LV_SYMBOL_HOME "   Radio");
-            lv_obj_add_event_cb(navbar[i], button_event_callback, LV_EVENT_ALL, content[RADIO]);
-            break;
-        case MEDIA:
-            lv_label_set_text(label, LV_SYMBOL_AUDIO "   Media");
-            lv_obj_add_event_cb(navbar[i], button_event_callback, LV_EVENT_ALL, content[MEDIA]);
-            break;
-        case PHONE:
-            lv_label_set_text(label, LV_SYMBOL_CALL "   Phone");
-            lv_obj_add_event_cb(navbar[i], button_event_callback, LV_EVENT_ALL, content[PHONE]);
-            break;
-        case SETTINGS:
-            lv_label_set_text(label, LV_SYMBOL_SETTINGS "   Settings");
-            lv_obj_add_event_cb(navbar[i], button_event_callback, LV_EVENT_ALL, content[SETTINGS]);
-            break;
-        }
+        lv_label_set_text(label, label_navbar_button[i]);
+        lv_obj_add_event_cb(navbar[i], button_event_callback, LV_EVENT_ALL, content[i]);
         lv_obj_center(label);
     }
     lv_obj_add_state(navbar[RADIO], LV_STATE_CHECKED);
@@ -139,19 +147,60 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_add_style(radio, &style_content_part, LV_PART_MAIN);
 
     /* Channel display part */
-    lv_obj_t * part_channel = lv_obj_create(radio);
-    lv_obj_set_grid_cell(part_channel, LV_GRID_ALIGN_STRETCH, 0, 2, LV_GRID_ALIGN_STRETCH, 0, 2);
-    lv_obj_set_style_bg_grad(part_channel, &grad_dsc_sky_blue, LV_PART_MAIN);
-    lv_obj_add_style(part_channel, &style_base_widget, LV_PART_MAIN);
+    lv_obj_t * widget_channel = lv_obj_create(radio);
+    lv_obj_set_grid_cell(widget_channel, LV_GRID_ALIGN_STRETCH, 0, 4, LV_GRID_ALIGN_STRETCH, 0, 4);
+    lv_obj_add_style(widget_channel, &style_base_widget, LV_PART_MAIN);
+    lv_obj_add_style(widget_channel, &style_widget_channel, LV_PART_MAIN);
+
+    lv_obj_t * label_channel = lv_label_create(widget_channel);
+    lv_label_set_text(label_channel, "92.9");
+    lv_obj_set_style_text_font(label_channel, &lv_font_montserrat_48, LV_PART_MAIN);
+
+    lv_obj_t * label_station = lv_label_create(widget_channel);
+    lv_label_set_text(label_station, "Hitz FM");
+    lv_obj_set_style_text_font(label_station, &lv_font_montserrat_32, LV_PART_MAIN);
+
+    lv_obj_t * label_song = lv_label_create(widget_channel);
+    lv_label_set_text(label_song, "Radiohead - Weird Fishes/Arpeggi");
+    lv_obj_set_style_text_font(label_song, &lv_font_montserrat_24, LV_PART_MAIN);
+
+    /* Radio controls */
+    for (int i = 0; i < 4; i++) {
+        lv_obj_t * widget_channel_button = lv_btn_create(radio);
+        lv_obj_set_grid_cell(widget_channel_button, LV_GRID_ALIGN_STRETCH, i, 1, LV_GRID_ALIGN_STRETCH, 4, 2);
+        lv_obj_add_style(widget_channel_button, &style_base_button, LV_PART_MAIN);
+        lv_obj_add_style(widget_channel_button, &style_base_button_hover, LV_STATE_HOVERED);
+        // lv_obj_add_style(widget_channel_button, &style_widget_channel_button, LV_PART_MAIN);
+
+        lv_obj_t * label = lv_label_create(widget_channel_button);
+        lv_label_set_text(label, label_radio_button[i]);
+        lv_obj_center(label);
+    }
+
+    /* Channel buttons */
+    lv_obj_t * button[4];
+    for (int row = 0; row < 3; row++) {
+        for(int col = 0; col < 2; col++) {
+            int index = row * 2 + col;
+            button[index] = lv_btn_create(radio);
+            lv_obj_set_grid_cell(button[index], LV_GRID_ALIGN_STRETCH, col * 2 + 4, 2, LV_GRID_ALIGN_STRETCH, row * 2, 2);
+            lv_obj_add_style(button[index], &style_base_button, LV_PART_MAIN);
+            lv_obj_add_style(button[index], &style_base_button_hover, LV_STATE_HOVERED);
+            lv_obj_add_style(button[index], &style_navbar_button, LV_STATE_CHECKED);
+
+            lv_obj_t * label = lv_label_create(button[index]);
+            lv_label_set_text(label, label_channel_button[index]);
+            lv_obj_center(label);
+        }
+    }
 }
 
 void content_media(lv_obj_t * screen_content)
 {
     lv_obj_t * media = lv_obj_create(screen_content);
-    // lv_obj_set_layout(media, LV_LAYOUT_FLEX);
     lv_obj_set_size(media, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(media, &style_base, LV_PART_MAIN);
-    lv_obj_add_style(media, &style_content, LV_PART_MAIN);
+    lv_obj_add_style(media, &style_content_part, LV_PART_MAIN);
 
     lv_obj_t * label = lv_label_create(media);
     lv_label_set_text(label, "Media");
@@ -161,10 +210,9 @@ void content_media(lv_obj_t * screen_content)
 void content_phone(lv_obj_t * screen_content)
 {
     lv_obj_t * phone = lv_obj_create(screen_content);
-    // lv_obj_set_layout(phone, LV_LAYOUT_FLEX);
     lv_obj_set_size(phone, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(phone, &style_base, LV_PART_MAIN);
-    lv_obj_add_style(phone, &style_content, LV_PART_MAIN);
+    lv_obj_add_style(phone, &style_content_part, LV_PART_MAIN);
 
     lv_obj_t * label = lv_label_create(phone);
     lv_label_set_text(label, "Phone");
@@ -174,10 +222,9 @@ void content_phone(lv_obj_t * screen_content)
 void content_settings(lv_obj_t * screen_content)
 {
     lv_obj_t * settings = lv_obj_create(screen_content);
-    // lv_obj_set_layout(settings, LV_LAYOUT_FLEX);
     lv_obj_set_size(settings, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(settings, &style_base, LV_PART_MAIN);
-    lv_obj_add_style(settings, &style_content, LV_PART_MAIN);
+    lv_obj_add_style(settings, &style_content_part, LV_PART_MAIN);
 
     lv_obj_t * label = lv_label_create(settings);
     lv_label_set_text(label, "Settings");

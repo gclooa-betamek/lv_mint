@@ -95,23 +95,17 @@ int main(int argc, char **argv)
   lv_obj_t * screen_part[3];
 
   screen_part[STATUSBAR] = lv_obj_create(screen);
-  lv_obj_set_layout(screen_part[STATUSBAR], LV_LAYOUT_FLEX);
-  lv_obj_set_size(screen_part[STATUSBAR], SCREEN_WIDTH, LV_PCT(SCREEN_STATUSBAR_PCT));
   lv_obj_add_style(screen_part[STATUSBAR], &style_base, LV_PART_MAIN);
   lv_obj_add_style(screen_part[STATUSBAR], &style_statusbar, LV_PART_MAIN);
 
   screen_part[CONTENT] = lv_obj_create(screen);
-  lv_obj_set_size(screen_part[CONTENT], SCREEN_WIDTH, LV_PCT(SCREEN_CONTENT_PCT));
   lv_obj_add_style(screen_part[CONTENT], &style_base, LV_PART_MAIN);
   lv_obj_add_style(screen_part[CONTENT], &style_content, LV_PART_MAIN);
 
   screen_part[NAVBAR] = lv_obj_create(screen);
-  lv_obj_set_layout(screen_part[NAVBAR], LV_LAYOUT_FLEX);
-  lv_obj_set_flex_flow(screen_part[NAVBAR], LV_FLEX_FLOW_ROW);
-  lv_obj_set_flex_align(screen_part[NAVBAR], LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-  lv_obj_set_size(screen_part[NAVBAR], SCREEN_WIDTH, LV_PCT(SCREEN_NAVBAR_PCT));
   lv_obj_add_style(screen_part[NAVBAR], &style_base, LV_PART_MAIN);
   lv_obj_add_style(screen_part[NAVBAR], &style_navbar, LV_PART_MAIN);
+  // lv_obj_set_flex_align(screen_part[NAVBAR], LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
   /* Create statusbar */
   statusbar_init(screen_part[STATUSBAR]);

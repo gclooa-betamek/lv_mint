@@ -23,6 +23,11 @@ static const lv_color_t grad_colors_sky_blue[2] = {
     LV_COLOR_MAKE(0x62, 0xcf, 0xf4),
     LV_COLOR_MAKE(0x2c, 0x67, 0xf2),
 };
+/* Off white gradient */
+static const lv_color_t grad_colors_off_white[2] = {
+    LV_COLOR_MAKE(0xf2, 0xf0, 0xef),
+    LV_COLOR_MAKE(0xf1, 0xf2, 0xf0),
+};
 
 static const lv_opa_t grad_opa[2] = {
     LV_OPA_100,
@@ -46,6 +51,7 @@ lv_grad_dsc_t grad_dsc_statusbar;
 lv_grad_dsc_t grad_dsc_content;
 lv_grad_dsc_t grad_dsc_button;
 lv_grad_dsc_t grad_dsc_sky_blue;
+lv_grad_dsc_t grad_dsc_off_white;
 
 static bool color_init_flag = false;
 
@@ -64,6 +70,9 @@ void color_init(void)
 
     lv_grad_init_stops(&grad_dsc_sky_blue, grad_colors_sky_blue, grad_opa, NULL, sizeof(grad_colors_sky_blue) / sizeof(lv_color_t));
     lv_grad_vertical_init(&grad_dsc_sky_blue);
+
+    lv_grad_init_stops(&grad_dsc_off_white, grad_colors_off_white, grad_opa, NULL, sizeof(grad_colors_off_white) / sizeof(lv_color_t));
+    lv_grad_vertical_init(&grad_dsc_off_white);
 
     color_init_flag = true;
 }
