@@ -86,6 +86,11 @@ void content_init(lv_obj_t * screen_content)
 {
     if (content_init_flag) return;
 
+    lv_subject_init_string(
+        &subject_radio_slider, subject_radio_slider_buffer, NULL,
+        sizeof(subject_radio_slider_buffer), "80.0"
+    );
+
     content_radio(screen_content);
     content_media(screen_content);
     content_phone(screen_content);
@@ -153,7 +158,7 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_add_style(widget_channel, &style_widget_channel, LV_PART_MAIN);
 
     lv_obj_t * label_channel = lv_label_create(widget_channel);
-    lv_label_set_text(label_channel, "92.9");
+    lv_label_bind_text(label_channel, &subject_radio_slider, "%s");
     lv_obj_set_style_text_font(label_channel, &lv_font_montserrat_48, LV_PART_MAIN);
 
     lv_obj_t * label_station = lv_label_create(widget_channel);
@@ -193,6 +198,12 @@ void content_radio(lv_obj_t * screen_content)
             lv_obj_center(label);
         }
     }
+
+    lv_obj_t * slider_radio = lv_slider_create(radio);
+    lv_obj_set_grid_cell(slider_radio, LV_GRID_ALIGN_CENTER, 0, 8, LV_GRID_ALIGN_CENTER, 6, 2);
+    lv_obj_set_width(slider_radio, LV_PCT(90));
+    lv_slider_set_range(slider_radio, 800, 1100);
+    lv_obj_add_event_cb(slider_radio, radio_slider_event_callback, LV_EVENT_VALUE_CHANGED, NULL);
 }
 
 void content_media(lv_obj_t * screen_content)
