@@ -37,6 +37,9 @@ lv_style_t style_navbar_button;
 lv_style_t style_widget_channel;
 lv_style_t style_widget_channel_button;
 
+lv_style_t style_widget_tuner;
+lv_style_t style_widget_tuner_knob;
+
 static bool style_init_flag = false;
 
 void style_init(void)
@@ -137,6 +140,15 @@ void style_init(void)
 
     lv_style_init(&style_widget_channel_button);
     lv_style_set_bg_grad(&style_widget_channel_button, &grad_dsc_off_white);
+
+    lv_style_init(&style_widget_tuner);
+    lv_style_set_bg_opa(&style_widget_tuner, LV_OPA_0);
+    lv_style_set_pad_all(&style_widget_tuner, 20);
+
+    lv_style_init(&style_widget_tuner_knob);
+    lv_style_set_width(&style_widget_tuner_knob, 7);
+    lv_style_set_bg_color(&style_widget_tuner_knob, lv_color_make(255, 0, 0));
+    lv_style_set_radius(&style_widget_tuner_knob, LV_RADIUS_CIRCLE);
 
     style_init_flag = true;
 }
