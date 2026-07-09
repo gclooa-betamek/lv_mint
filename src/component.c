@@ -5,6 +5,7 @@
  *  @brief  Component definitions for the LVGL simulator.
  */
 
+#include <stdio.h>
 #include "lvgl/lvgl.h"
 #include "color.h"
 #include "component.h"
@@ -150,6 +151,7 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_t * radio = lv_obj_create(screen_content);
     lv_obj_add_style(radio, &style_base, LV_PART_MAIN);
     lv_obj_add_style(radio, &style_content_part, LV_PART_MAIN);
+    lv_obj_add_style(radio, &style_content_radio, LV_PART_MAIN);
 
     /* Channel display part */
     lv_obj_t * widget_channel = lv_obj_create(radio);
@@ -212,45 +214,62 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_set_style_bg_opa(widget_tuner_slider, LV_OPA_0, LV_PART_MAIN);
     lv_obj_set_style_bg_opa(widget_tuner_slider, LV_OPA_0, LV_PART_INDICATOR);
     lv_obj_set_style_bg_opa(widget_tuner_slider, LV_OPA_0, LV_PART_KNOB);
-
     lv_slider_set_range(widget_tuner_slider, 800, 1100);
+
     lv_obj_add_event_cb(widget_tuner_slider, widget_tuner_event_callback, LV_EVENT_VALUE_CHANGED, NULL);
     lv_obj_add_event_cb(widget_tuner, widget_tuner_draw_callback, LV_EVENT_DRAW_MAIN, NULL);
-
 }
 
 void content_media(lv_obj_t * screen_content)
 {
+    /* Media content container */
     lv_obj_t * media = lv_obj_create(screen_content);
-    lv_obj_set_size(media, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(media, &style_base, LV_PART_MAIN);
     lv_obj_add_style(media, &style_content_part, LV_PART_MAIN);
+    lv_obj_add_style(media, &style_content_media, LV_PART_MAIN);
 
-    lv_obj_t * label = lv_label_create(media);
-    lv_label_set_text(label, "Media");
-    lv_obj_center(label);
+    /* Album art widget */
+    lv_obj_t * album_art = lv_obj_create(media);
+    lv_obj_add_style(album_art, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(album_art, &style_base_widget, LV_PART_MAIN);
+    lv_obj_add_style(album_art, &style_widget_album_art, LV_PART_MAIN);
+    lv_obj_set_height(album_art, LV_PCT(90));
+    lv_obj_update_layout(media);
+    lv_obj_set_width(album_art, lv_obj_get_height(album_art));
+
+    /* Display default album art */
+    LV_IMAGE_DECLARE(album_art_default);
+    lv_obj_t * art = lv_image_create(album_art);
+    lv_image_set_src(art, &album_art_default);
+    lv_obj_set_style_opa(art, LV_OPA_30, LV_PART_MAIN);
+    lv_obj_set_style_image_recolor(art, lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_set_style_image_recolor_opa(art, LV_OPA_100, LV_PART_MAIN);
+    lv_obj_set_align(art, LV_ALIGN_CENTER);
+
+    /* Player container */
+    lv_obj_t * player = lv_obj_create(media);
+    lv_obj_add_style(player, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(player, &style_base_widget, LV_PART_MAIN);
+    lv_obj_set_flex_grow(player, 1);
+    lv_obj_set_height(player, LV_PCT(90));
 }
 
 void content_phone(lv_obj_t * screen_content)
 {
     lv_obj_t * phone = lv_obj_create(screen_content);
-    lv_obj_set_size(phone, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(phone, &style_base, LV_PART_MAIN);
     lv_obj_add_style(phone, &style_content_part, LV_PART_MAIN);
 
     lv_obj_t * label = lv_label_create(phone);
     lv_label_set_text(label, "Phone");
-    lv_obj_center(label);
 }
 
 void content_settings(lv_obj_t * screen_content)
 {
     lv_obj_t * settings = lv_obj_create(screen_content);
-    lv_obj_set_size(settings, SCREEN_WIDTH, LV_PCT(100));
     lv_obj_add_style(settings, &style_base, LV_PART_MAIN);
     lv_obj_add_style(settings, &style_content_part, LV_PART_MAIN);
 
     lv_obj_t * label = lv_label_create(settings);
     lv_label_set_text(label, "Settings");
-    lv_obj_center(label);
 }

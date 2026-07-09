@@ -25,6 +25,10 @@ extern lv_style_t style_statusbar_part;
 
 extern lv_style_t style_content;
 extern lv_style_t style_content_part;
+extern lv_style_t style_content_radio;
+extern lv_style_t style_content_media;
+extern lv_style_t style_content_phone;
+extern lv_style_t style_content_settings;
 
 extern lv_style_t style_navbar;
 extern lv_style_t style_navbar_button;
@@ -33,7 +37,8 @@ extern lv_style_t style_widget_channel;
 extern lv_style_t style_widget_channel_button;
 
 extern lv_style_t style_widget_tuner;
-extern lv_style_t style_widget_tuner_knob;
+
+extern lv_style_t style_widget_album_art;
 
 void style_init(void);
 

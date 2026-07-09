@@ -95,8 +95,7 @@ void widget_tuner_draw_callback(lv_event_t * e)
     int width = lv_area_get_width(&area);
 
     /* Tuner frequency markers */
-    for(int freq = min; freq <= max; freq += 5)
-    {
+    for(int freq = min; freq <= max; freq += 5) {
         lv_draw_line_dsc_t marker;
         lv_draw_line_dsc_init(&marker);
 

@@ -30,6 +30,10 @@ lv_style_t style_statusbar_part;
 
 lv_style_t style_content;
 lv_style_t style_content_part;
+lv_style_t style_content_radio;
+lv_style_t style_content_media;
+lv_style_t style_content_phone;
+lv_style_t style_content_settings;
 
 lv_style_t style_navbar;
 lv_style_t style_navbar_button;
@@ -38,7 +42,8 @@ lv_style_t style_widget_channel;
 lv_style_t style_widget_channel_button;
 
 lv_style_t style_widget_tuner;
-lv_style_t style_widget_tuner_knob;
+
+lv_style_t style_widget_album_art;
 
 static bool style_init_flag = false;
 
@@ -103,14 +108,23 @@ void style_init(void)
     lv_style_init(&style_content_part);
     lv_style_set_bg_opa(&style_content_part, LV_OPA_0);
     lv_style_set_size(&style_content_part, LV_PCT(100), LV_PCT(100));
-    lv_style_set_layout(&style_content_part, LV_LAYOUT_GRID);
-    lv_style_set_grid_column_dsc_array(&style_content_part, grid_col_dsc_array_0);
-    lv_style_set_grid_row_dsc_array(&style_content_part, grid_row_dsc_array_0);
     lv_style_set_pad_top(&style_content_part, 10);
     lv_style_set_pad_left(&style_content_part, 10);
     lv_style_set_pad_right(&style_content_part, 10);
     lv_style_set_pad_row(&style_content_part, 10);
     lv_style_set_pad_column(&style_content_part, 10);
+
+    lv_style_init(&style_content_radio);
+    lv_style_set_layout(&style_content_radio, LV_LAYOUT_GRID);
+    lv_style_set_grid_column_dsc_array(&style_content_radio, grid_col_dsc_array_0);
+    lv_style_set_grid_row_dsc_array(&style_content_radio, grid_row_dsc_array_0);
+
+    lv_style_init(&style_content_media);
+    lv_style_set_layout(&style_content_media, LV_LAYOUT_FLEX);
+    lv_style_set_flex_flow(&style_content_media, LV_FLEX_FLOW_ROW);
+
+    lv_style_init(&style_content_phone);
+    lv_style_init(&style_content_settings);
 
     /**
      * NAVIGATION BAR STYLES
@@ -128,7 +142,7 @@ void style_init(void)
     lv_style_set_bg_grad(&style_navbar_button, &grad_dsc_button);
 
     /**
-     * WIDGET STYLES
+     * RADIO WIDGET STYLES
      */
     lv_style_init(&style_widget_channel);
     lv_style_set_bg_grad(&style_widget_channel, &grad_dsc_sky_blue);
@@ -145,10 +159,11 @@ void style_init(void)
     lv_style_set_bg_opa(&style_widget_tuner, LV_OPA_0);
     lv_style_set_pad_all(&style_widget_tuner, 20);
 
-    lv_style_init(&style_widget_tuner_knob);
-    lv_style_set_width(&style_widget_tuner_knob, 7);
-    lv_style_set_bg_color(&style_widget_tuner_knob, lv_color_make(255, 0, 0));
-    lv_style_set_radius(&style_widget_tuner_knob, LV_RADIUS_CIRCLE);
+    /**
+     * MEDIA WIDGET STYLES
+     */
+    lv_style_init(&style_widget_album_art);
+    lv_style_set_bg_grad(&style_widget_album_art, &grad_dsc_sky_blue);
 
     style_init_flag = true;
 }
