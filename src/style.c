@@ -40,10 +40,11 @@ lv_style_t style_navbar_button;
 
 lv_style_t style_widget_channel;
 lv_style_t style_widget_channel_button;
-
 lv_style_t style_widget_tuner;
 
 lv_style_t style_widget_album_art;
+lv_style_t style_widget_player;
+lv_style_t style_widget_progress;
 
 static bool style_init_flag = false;
 
@@ -165,6 +166,17 @@ void style_init(void)
     lv_style_init(&style_widget_album_art);
     lv_style_set_bg_grad(&style_widget_album_art, &grad_dsc_sky_blue);
     lv_style_set_clip_corner(&style_widget_album_art, true);
+
+    lv_style_init(&style_widget_player);
+    lv_style_set_layout(&style_widget_player, LV_LAYOUT_FLEX);
+    lv_style_set_flex_flow(&style_widget_player, LV_FLEX_FLOW_COLUMN);
+    lv_style_set_pad_row(&style_widget_player, 10);
+    lv_style_set_pad_column(&style_widget_player, 10);
+    lv_style_set_pad_all(&style_widget_player, 30);
+
+    lv_style_init(&style_widget_progress);
+    lv_style_set_pad_all(&style_widget_progress, 10);
+    lv_style_set_pad_column(&style_widget_progress, 30);
 
     style_init_flag = true;
 }

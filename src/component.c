@@ -257,8 +257,73 @@ void content_media(lv_obj_t * screen_content)
     lv_obj_t * player = lv_obj_create(media);
     lv_obj_add_style(player, &style_base, LV_PART_MAIN);
     lv_obj_add_style(player, &style_base_widget, LV_PART_MAIN);
+    lv_obj_add_style(player, &style_widget_player, LV_PART_MAIN);
     lv_obj_set_flex_grow(player, 1);
+    lv_obj_set_flex_align(player, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_height(player, LV_PCT(90));
+
+    /* Player metadata */
+    lv_obj_t * label_song_name = lv_label_create(player);
+    lv_label_set_text(label_song_name, "High Speed");
+    lv_obj_set_style_text_font(label_song_name, &lv_font_montserrat_48, LV_PART_MAIN);
+
+    lv_obj_t * label_song_artist = lv_label_create(player);
+    lv_label_set_text(label_song_artist, "Coldplay");
+    lv_obj_set_style_text_font(label_song_artist, &lv_font_montserrat_32, LV_PART_MAIN);
+
+    /* Player progress bar */
+    lv_obj_t * widget_progress = lv_obj_create(player);
+    lv_obj_add_style(widget_progress, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(widget_progress, &style_base_widget, LV_PART_MAIN);
+    lv_obj_add_style(widget_progress, &style_widget_progress, LV_PART_MAIN);
+    lv_obj_set_layout(widget_progress, LV_LAYOUT_FLEX);
+    lv_obj_set_flex_flow(widget_progress, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(widget_progress, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_width(widget_progress, LV_PCT(100));
+
+    lv_obj_t * widget_progress_timer_start = lv_label_create(widget_progress);
+    lv_label_set_text(widget_progress_timer_start, "00:00");
+    lv_obj_set_style_text_font(widget_progress_timer_start, &lv_font_montserrat_16, LV_PART_MAIN);
+
+    lv_obj_t * widget_progress_slider = lv_slider_create(widget_progress);
+    lv_slider_set_value(widget_progress_slider, 33, LV_ANIM_OFF);
+    lv_obj_set_style_bg_color(widget_progress_slider, lv_color_hex(0x777777), LV_PART_MAIN);
+    lv_obj_set_style_bg_color(widget_progress_slider, lv_color_hex(0xffffff), LV_PART_INDICATOR);
+    lv_obj_set_style_bg_color(widget_progress_slider, lv_color_hex(0xffffff), LV_PART_KNOB);
+    lv_obj_set_style_height(widget_progress_slider, 4, LV_PART_MAIN);
+    lv_obj_set_flex_grow(widget_progress_slider, 1);
+
+    lv_obj_t * widget_progress_timer_end = lv_label_create(widget_progress);
+    lv_label_set_text(widget_progress_timer_end, "00:00");
+    lv_obj_set_style_text_font(widget_progress_timer_end, &lv_font_montserrat_16, LV_PART_MAIN);
+
+    /* Player controls container */
+    lv_obj_t * widget_control = lv_obj_create(player);
+    lv_obj_add_style(widget_control, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(widget_control, &style_base_widget, LV_PART_MAIN);
+    lv_obj_set_layout(widget_control, LV_LAYOUT_FLEX);
+    lv_obj_set_flex_flow(widget_control, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(widget_control, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_set_size(widget_control, LV_PCT(100), LV_PCT(30));
+    lv_obj_update_layout(widget_control);
+
+    /* Player controls */
+    lv_obj_t * widget_control_shuffle = lv_btn_create(widget_control);
+    lv_obj_add_style(widget_control_shuffle, &style_base_button, LV_PART_MAIN);
+
+    lv_obj_t * widget_control_prev = lv_btn_create(widget_control);
+    lv_obj_add_style(widget_control_prev, &style_base_button, LV_PART_MAIN);
+
+    lv_obj_t * widget_control_play = lv_btn_create(widget_control);
+    lv_obj_set_size(widget_control_play, lv_obj_get_content_height(widget_control), lv_obj_get_content_height(widget_control));
+    lv_obj_set_style_radius(widget_control_play, LV_RADIUS_CIRCLE, 0);
+    lv_obj_set_style_bg_color(widget_control_play, lv_color_hex(0xffffff), 0);
+
+    lv_obj_t * widget_control_next = lv_btn_create(widget_control);
+    lv_obj_add_style(widget_control_next, &style_base_button, LV_PART_MAIN);
+
+    lv_obj_t * widget_control_queue = lv_btn_create(widget_control);
+    lv_obj_add_style(widget_control_queue, &style_base_button, LV_PART_MAIN);
 }
 
 void content_phone(lv_obj_t * screen_content)

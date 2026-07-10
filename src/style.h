@@ -35,10 +35,11 @@ extern lv_style_t style_navbar_button;
 
 extern lv_style_t style_widget_channel;
 extern lv_style_t style_widget_channel_button;
-
 extern lv_style_t style_widget_tuner;
 
 extern lv_style_t style_widget_album_art;
+extern lv_style_t style_widget_player;
+extern lv_style_t style_widget_progress;
 
 void style_init(void);
 
