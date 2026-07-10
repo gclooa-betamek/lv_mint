@@ -238,13 +238,20 @@ void content_media(lv_obj_t * screen_content)
     lv_obj_set_width(album_art, lv_obj_get_height(album_art));
 
     /* Display default album art */
-    LV_IMAGE_DECLARE(album_art_default);
+    LV_IMAGE_DECLARE(album_art_betamek);
     lv_obj_t * art = lv_image_create(album_art);
-    lv_image_set_src(art, &album_art_default);
+    lv_image_set_src(art, &album_art_betamek);
     lv_obj_set_style_opa(art, LV_OPA_30, LV_PART_MAIN);
     lv_obj_set_style_image_recolor(art, lv_color_hex(0xffffff), LV_PART_MAIN);
     lv_obj_set_style_image_recolor_opa(art, LV_OPA_100, LV_PART_MAIN);
     lv_obj_set_align(art, LV_ALIGN_CENTER);
+
+    /* Demo decoration settings */
+    lv_obj_remove_flag(album_art, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_scrollbar_mode(album_art, LV_SCROLLBAR_MODE_OFF);
+    lv_obj_set_x(art, 100);
+    lv_obj_set_y(art, 50);
+    lv_image_set_scale(art, 100);
 
     /* Player container */
     lv_obj_t * player = lv_obj_create(media);

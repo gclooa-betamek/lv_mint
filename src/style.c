@@ -164,6 +164,7 @@ void style_init(void)
      */
     lv_style_init(&style_widget_album_art);
     lv_style_set_bg_grad(&style_widget_album_art, &grad_dsc_sky_blue);
+    lv_style_set_clip_corner(&style_widget_album_art, true);
 
     style_init_flag = true;
 }
