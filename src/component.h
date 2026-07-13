@@ -30,6 +30,21 @@ typedef enum {
     SETTINGS
 } screen_content_t;
 
+typedef enum {
+    SHUFFLE,
+    PREV,
+    PLAY,
+    NEXT,
+    QUEUE
+} widget_control_index_t;
+
+typedef struct {
+    int32_t size;
+    uint32_t bg_color;
+    uint32_t text_color;
+    const char * label;
+} widget_control_t;
+
 void statusbar_init(lv_obj_t * screen_statusbar);
 void content_init(lv_obj_t * screen_content);
 void navbar_init(lv_obj_t * screen_navbar);

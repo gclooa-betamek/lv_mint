@@ -114,7 +114,7 @@ int main(int argc, char **argv)
   /* Create navbar */
   navbar_init(screen_part[NAVBAR]);
 
-  while(1) {
+  while (1) {
     /* Periodically call the lv_task handler.
      * It could be done in a timer interrupt or an OS task too.*/
     uint32_t sleep_time_ms = lv_timer_handler();

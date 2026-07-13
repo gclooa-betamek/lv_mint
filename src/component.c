@@ -32,7 +32,15 @@ static const char * label_radio_button[4] = {
     LV_SYMBOL_PREV,
     LV_SYMBOL_LEFT,
     LV_SYMBOL_RIGHT,
-    LV_SYMBOL_NEXT,
+    LV_SYMBOL_NEXT
+};
+
+static const widget_control_t widget_control_button[5] = {
+    {80, 0x1a1a1a, 0xffffff, LV_SYMBOL_SHUFFLE},
+    {80, 0xffffff, 0x1a1a1a, LV_SYMBOL_PREV},
+    {95, 0xffffff, 0x1a1a1a, LV_SYMBOL_PLAY},
+    {80, 0xffffff, 0x1a1a1a, LV_SYMBOL_NEXT},
+    {80, 0x1a1a1a, 0xffffff, LV_SYMBOL_LIST},
 };
 
 static bool statusbar_init_flag = false;
@@ -50,7 +58,7 @@ void statusbar_init(lv_obj_t * screen_statusbar)
 
     lv_obj_t * statusbar[STATUSBAR_PART_COUNT];
 
-    for(int i = 0; i < STATUSBAR_PART_COUNT; i++) {
+    for (int i = 0; i < STATUSBAR_PART_COUNT; i++) {
         statusbar[i] = lv_obj_create(screen_statusbar);
         lv_obj_set_flex_grow(statusbar[i], 1);
         lv_obj_set_flex_flow(statusbar[i], LV_FLEX_FLOW_ROW);
@@ -123,7 +131,7 @@ void navbar_init(lv_obj_t * screen_navbar)
 
     lv_obj_t * navbar[SCREEN_CONTENT_COUNT];
 
-    for(int i = 0; i < SCREEN_CONTENT_COUNT; i++) {
+    for (int i = 0; i < SCREEN_CONTENT_COUNT; i++) {
         navbar[i] = lv_btn_create(screen_navbar);
         lv_obj_set_height(navbar[i], LV_PCT(100));
         lv_obj_set_flex_grow(navbar[i], 1);
@@ -185,17 +193,16 @@ void content_radio(lv_obj_t * screen_content)
     }
 
     /* Channel buttons */
-    lv_obj_t * button[4];
     for (int row = 0; row < 3; row++) {
-        for(int col = 0; col < 2; col++) {
+        for (int col = 0; col < 2; col++) {
             int index = row * 2 + col;
-            button[index] = lv_btn_create(radio);
-            lv_obj_set_grid_cell(button[index], LV_GRID_ALIGN_STRETCH, col * 2 + 4, 2, LV_GRID_ALIGN_STRETCH, row * 2, 2);
-            lv_obj_add_style(button[index], &style_base_button, LV_PART_MAIN);
-            lv_obj_add_style(button[index], &style_base_button_hover, LV_STATE_HOVERED);
-            lv_obj_add_style(button[index], &style_navbar_button, LV_STATE_CHECKED);
+            lv_obj_t * button = lv_btn_create(radio);
+            lv_obj_set_grid_cell(button, LV_GRID_ALIGN_STRETCH, col * 2 + 4, 2, LV_GRID_ALIGN_STRETCH, row * 2, 2);
+            lv_obj_add_style(button, &style_base_button, LV_PART_MAIN);
+            lv_obj_add_style(button, &style_base_button_hover, LV_STATE_HOVERED);
+            lv_obj_add_style(button, &style_navbar_button, LV_STATE_CHECKED);
 
-            lv_obj_t * label = lv_label_create(button[index]);
+            lv_obj_t * label = lv_label_create(button);
             lv_label_set_text(label, label_channel_button[index]);
             lv_obj_center(label);
         }
@@ -228,14 +235,14 @@ void content_media(lv_obj_t * screen_content)
     lv_obj_add_style(media, &style_content_part, LV_PART_MAIN);
     lv_obj_add_style(media, &style_content_media, LV_PART_MAIN);
 
+    lv_obj_update_layout(media);
+
     /* Album art widget */
     lv_obj_t * album_art = lv_obj_create(media);
     lv_obj_add_style(album_art, &style_base, LV_PART_MAIN);
     lv_obj_add_style(album_art, &style_base_widget, LV_PART_MAIN);
     lv_obj_add_style(album_art, &style_widget_album_art, LV_PART_MAIN);
-    lv_obj_set_height(album_art, LV_PCT(90));
-    lv_obj_update_layout(media);
-    lv_obj_set_width(album_art, lv_obj_get_height(album_art));
+    lv_obj_set_size(album_art, lv_obj_get_content_height(media) * 90 / 100, LV_PCT(90));
 
     /* Display default album art */
     LV_IMAGE_DECLARE(album_art_betamek);
@@ -305,25 +312,24 @@ void content_media(lv_obj_t * screen_content)
     lv_obj_set_flex_flow(widget_control, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(widget_control, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_set_size(widget_control, LV_PCT(100), LV_PCT(30));
+
     lv_obj_update_layout(widget_control);
 
     /* Player controls */
-    lv_obj_t * widget_control_shuffle = lv_btn_create(widget_control);
-    lv_obj_add_style(widget_control_shuffle, &style_base_button, LV_PART_MAIN);
+    for (int i = 0; i < 5; i++) {
+        lv_obj_t * button = lv_btn_create(widget_control);
+        lv_obj_set_size(button, lv_obj_get_content_height(widget_control) * widget_control_button[i].size / 100, LV_PCT(widget_control_button[i].size));
+        lv_obj_set_style_radius(button, LV_RADIUS_CIRCLE, 0);
+        lv_obj_set_style_bg_color(button, lv_color_hex(widget_control_button[i].bg_color), 0);
+        lv_obj_set_style_text_color(button, lv_color_hex(widget_control_button[i].text_color), 0);
+        lv_obj_set_style_text_font(button, &lv_font_montserrat_32, 0);
+        lv_obj_set_style_margin_hor(button, lv_obj_get_content_height(widget_control) * 20 / 100, 0);
+        lv_obj_add_style(button, &style_base_button, LV_PART_MAIN);
 
-    lv_obj_t * widget_control_prev = lv_btn_create(widget_control);
-    lv_obj_add_style(widget_control_prev, &style_base_button, LV_PART_MAIN);
-
-    lv_obj_t * widget_control_play = lv_btn_create(widget_control);
-    lv_obj_set_size(widget_control_play, lv_obj_get_content_height(widget_control), lv_obj_get_content_height(widget_control));
-    lv_obj_set_style_radius(widget_control_play, LV_RADIUS_CIRCLE, 0);
-    lv_obj_set_style_bg_color(widget_control_play, lv_color_hex(0xffffff), 0);
-
-    lv_obj_t * widget_control_next = lv_btn_create(widget_control);
-    lv_obj_add_style(widget_control_next, &style_base_button, LV_PART_MAIN);
-
-    lv_obj_t * widget_control_queue = lv_btn_create(widget_control);
-    lv_obj_add_style(widget_control_queue, &style_base_button, LV_PART_MAIN);
+        lv_obj_t * label = lv_label_create(button);
+        lv_label_set_text(label, widget_control_button[i].label);
+        lv_obj_center(label);
+    }
 }
 
 void content_phone(lv_obj_t * screen_content)

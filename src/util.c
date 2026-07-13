@@ -30,6 +30,8 @@ void clock_timer_callback(lv_timer_t * timer)
 void button_event_callback(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
+    if (code != LV_EVENT_CLICKED) return;
+
     lv_obj_t * button = lv_event_get_target(e);
     lv_obj_t * content = lv_event_get_user_data(e);
 
@@ -37,27 +39,24 @@ void button_event_callback(lv_event_t * e)
     lv_obj_t * screen_navbar = lv_obj_get_parent(button);
     lv_obj_t * screen_content = lv_obj_get_parent(content);
 
-    if (code == LV_EVENT_CLICKED) {
-        /* Clear LV_STATE_CHECKED for all buttons except the one pressed. (Toggling behavior) */
-        lv_obj_remove_state(lv_obj_get_child(screen_navbar, RADIO), LV_STATE_CHECKED);
-        lv_obj_remove_state(lv_obj_get_child(screen_navbar, MEDIA), LV_STATE_CHECKED);
-        lv_obj_remove_state(lv_obj_get_child(screen_navbar, PHONE), LV_STATE_CHECKED);
-        lv_obj_remove_state(lv_obj_get_child(screen_navbar, SETTINGS), LV_STATE_CHECKED);
-        lv_obj_add_state(button, LV_STATE_CHECKED);
+    /* Clear LV_STATE_CHECKED for all buttons except the one pressed. (Toggling behavior) */
+    lv_obj_remove_state(lv_obj_get_child(screen_navbar, RADIO), LV_STATE_CHECKED);
+    lv_obj_remove_state(lv_obj_get_child(screen_navbar, MEDIA), LV_STATE_CHECKED);
+    lv_obj_remove_state(lv_obj_get_child(screen_navbar, PHONE), LV_STATE_CHECKED);
+    lv_obj_remove_state(lv_obj_get_child(screen_navbar, SETTINGS), LV_STATE_CHECKED);
+    lv_obj_add_state(button, LV_STATE_CHECKED);
 
-        /* Hide all content screens except the one selected. */
-        lv_obj_add_flag(lv_obj_get_child(screen_content, RADIO), LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(lv_obj_get_child(screen_content, MEDIA), LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(lv_obj_get_child(screen_content, PHONE), LV_OBJ_FLAG_HIDDEN);
-        lv_obj_add_flag(lv_obj_get_child(screen_content, SETTINGS), LV_OBJ_FLAG_HIDDEN);
-        lv_obj_remove_flag(content, LV_OBJ_FLAG_HIDDEN);
-    }
+    /* Hide all content screens except the one selected. */
+    lv_obj_add_flag(lv_obj_get_child(screen_content, RADIO), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lv_obj_get_child(screen_content, MEDIA), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lv_obj_get_child(screen_content, PHONE), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(lv_obj_get_child(screen_content, SETTINGS), LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(content, LV_OBJ_FLAG_HIDDEN);
 }
 
 void widget_tuner_event_callback(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-
     if (code != LV_EVENT_VALUE_CHANGED) return;
 
     lv_obj_t * slider = lv_event_get_target(e);
@@ -73,7 +72,6 @@ void widget_tuner_event_callback(lv_event_t * e)
 void widget_tuner_draw_callback(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
-
     if (code != LV_EVENT_DRAW_MAIN) return;
 
     lv_obj_t * tuner = lv_event_get_target(e);
@@ -95,7 +93,7 @@ void widget_tuner_draw_callback(lv_event_t * e)
     int width = lv_area_get_width(&area);
 
     /* Tuner frequency markers */
-    for(int freq = min; freq <= max; freq += 5) {
+    for (int freq = min; freq <= max; freq += 5) {
         lv_draw_line_dsc_t marker;
         lv_draw_line_dsc_init(&marker);
 
