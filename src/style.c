@@ -9,13 +9,21 @@
 #include "style.h"
 #include "color.h"
 
-static const int32_t grid_col_dsc_array_0[] = {
+static const int32_t grid_col_dsc_radio[] = {
     LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
     LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
     LV_GRID_TEMPLATE_LAST
 };
-static const int32_t grid_row_dsc_array_0[] = {
+static const int32_t grid_row_dsc_radio[] = {
     LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+    LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+    LV_GRID_TEMPLATE_LAST
+};
+static const int32_t grid_col_dsc_contact[] = {
+    LV_GRID_FR(1),
+    LV_GRID_TEMPLATE_LAST
+};
+static const int32_t grid_row_dsc_contact[] = {
     LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
     LV_GRID_TEMPLATE_LAST
 };
@@ -45,6 +53,10 @@ lv_style_t style_widget_tuner;
 lv_style_t style_widget_album_art;
 lv_style_t style_widget_player;
 lv_style_t style_widget_progress;
+
+lv_style_t style_widget_keypad;
+lv_style_t style_widget_contact;
+lv_style_t style_widget_input;
 
 static bool style_init_flag = false;
 
@@ -117,14 +129,17 @@ void style_init(void)
 
     lv_style_init(&style_content_radio);
     lv_style_set_layout(&style_content_radio, LV_LAYOUT_GRID);
-    lv_style_set_grid_column_dsc_array(&style_content_radio, grid_col_dsc_array_0);
-    lv_style_set_grid_row_dsc_array(&style_content_radio, grid_row_dsc_array_0);
+    lv_style_set_grid_column_dsc_array(&style_content_radio, grid_col_dsc_radio);
+    lv_style_set_grid_row_dsc_array(&style_content_radio, grid_row_dsc_radio);
 
     lv_style_init(&style_content_media);
     lv_style_set_layout(&style_content_media, LV_LAYOUT_FLEX);
     lv_style_set_flex_flow(&style_content_media, LV_FLEX_FLOW_ROW);
 
     lv_style_init(&style_content_phone);
+    lv_style_set_layout(&style_content_phone, LV_LAYOUT_FLEX);
+    lv_style_set_flex_flow(&style_content_phone, LV_FLEX_FLOW_ROW);
+
     lv_style_init(&style_content_settings);
 
     /**
@@ -177,6 +192,27 @@ void style_init(void)
     lv_style_init(&style_widget_progress);
     lv_style_set_pad_all(&style_widget_progress, 10);
     lv_style_set_pad_column(&style_widget_progress, 30);
+
+    /**
+     * PHONE WIDGET STYLES
+     */
+    lv_style_init(&style_widget_keypad);
+    lv_style_set_bg_opa(&style_widget_keypad, LV_OPA_0);
+    lv_style_set_pad_row(&style_widget_keypad, 10);
+    lv_style_set_pad_column(&style_widget_keypad, 10);
+
+    lv_style_init(&style_widget_contact);
+    lv_style_set_layout(&style_widget_contact, LV_LAYOUT_GRID);
+    lv_style_set_grid_column_dsc_array(&style_widget_contact, grid_col_dsc_contact);
+    lv_style_set_grid_row_dsc_array(&style_widget_contact, grid_row_dsc_contact);
+    lv_style_set_bg_opa(&style_widget_contact, LV_OPA_0);
+    lv_style_set_pad_row(&style_widget_contact, 10);
+
+    lv_style_init(&style_widget_input);
+    lv_style_set_border_color(&style_widget_input, lv_color_hex(0x202020));
+    lv_style_set_border_width(&style_widget_input, 5);
+    lv_style_set_pad_top(&style_widget_input, 15);
+    lv_style_set_text_align(&style_widget_input, LV_TEXT_ALIGN_CENTER);
 
     style_init_flag = true;
 }

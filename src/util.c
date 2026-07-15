@@ -138,3 +138,13 @@ void widget_tuner_draw_callback(lv_event_t * e)
     /* Debug message */
     printf("DEBUG: widget_tuner_draw_callback() fired.\n");
 }
+
+void phone_keypad_event_callback(lv_event_t * e)
+{
+    lv_obj_t * key = lv_event_get_target_obj(e);
+    lv_obj_t * textarea = (lv_obj_t *)lv_event_get_user_data(e);
+    const char * text = lv_buttonmatrix_get_button_text(key, lv_buttonmatrix_get_selected_button(key));
+    if(lv_strcmp(text, LV_SYMBOL_BACKSPACE) == 0) lv_textarea_delete_char(textarea);
+    else if(lv_strcmp(text, LV_SYMBOL_CALL) == 0) lv_obj_send_event(textarea, LV_EVENT_READY, NULL);
+    else lv_textarea_add_text(textarea, text);
+}

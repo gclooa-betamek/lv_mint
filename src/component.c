@@ -153,6 +153,7 @@ void navbar_init(lv_obj_t * screen_navbar)
  * CONTENT SCREENS
  *******************/
 
+/* Radio content screen */
 void content_radio(lv_obj_t * screen_content)
 {
     /* Radio content container */
@@ -227,6 +228,7 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_add_event_cb(widget_tuner, widget_tuner_draw_callback, LV_EVENT_DRAW_MAIN, NULL);
 }
 
+/* Media content screen */
 void content_media(lv_obj_t * screen_content)
 {
     /* Media content container */
@@ -332,16 +334,58 @@ void content_media(lv_obj_t * screen_content)
     }
 }
 
+/* Phone content screen */
 void content_phone(lv_obj_t * screen_content)
 {
+    /* Phone content container */
     lv_obj_t * phone = lv_obj_create(screen_content);
     lv_obj_add_style(phone, &style_base, LV_PART_MAIN);
     lv_obj_add_style(phone, &style_content_part, LV_PART_MAIN);
+    lv_obj_add_style(phone, &style_content_phone, LV_PART_MAIN);
 
-    lv_obj_t * label = lv_label_create(phone);
-    lv_label_set_text(label, "Phone");
+    /* Phone keypad */
+    lv_obj_t * keypad = lv_buttonmatrix_create(phone);
+    lv_obj_add_style(keypad, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(keypad, &style_base_widget, LV_PART_MAIN);
+    lv_obj_add_style(keypad, &style_widget_keypad, LV_PART_MAIN);
+    lv_obj_add_style(keypad, &style_base_button, LV_PART_ITEMS);
+    lv_obj_set_style_text_font(keypad, &lv_font_montserrat_48, LV_PART_ITEMS);
+    lv_obj_set_style_text_color(keypad, lv_color_hex(0xffffff), LV_PART_ITEMS);
+    lv_obj_set_height(keypad, LV_PCT(90));
+    lv_obj_set_flex_grow(keypad, 1);
+    static const char * map[] = {
+        "1", "2", "3", "\n",
+        "4", "5", "6", "\n",
+        "7", "8", "9", "\n",
+        LV_SYMBOL_BACKSPACE,
+        "0", LV_SYMBOL_CALL,
+        NULL
+    };
+    lv_buttonmatrix_set_map(keypad, map);
+
+    /* Contact list container */
+    lv_obj_t * contact = lv_obj_create(phone);
+    lv_obj_add_style(contact, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(contact, &style_base_widget, LV_PART_MAIN);
+    lv_obj_add_style(contact, &style_widget_contact, LV_PART_MAIN);
+    lv_obj_set_height(contact, LV_PCT(90));
+    lv_obj_set_flex_grow(contact, 1);
+
+    /* Contact list input field */
+    lv_obj_t * input = lv_textarea_create(contact);
+    lv_obj_set_grid_cell(input, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
+    lv_obj_add_style(input, &style_base_button, LV_PART_MAIN);
+    lv_obj_add_style(input, &style_widget_input, LV_PART_MAIN);
+    lv_obj_set_style_text_font(input, &lv_font_montserrat_48, LV_PART_MAIN);
+    lv_obj_set_style_text_color(input, lv_color_hex(0xffffff), LV_PART_MAIN);
+    lv_obj_set_flex_grow(input, 1);
+    lv_obj_set_scrollbar_mode(input, LV_SCROLLBAR_MODE_OFF);
+
+    lv_textarea_set_one_line(input, true);
+    lv_obj_add_event_cb(keypad, phone_keypad_event_callback, LV_EVENT_VALUE_CHANGED, input);
 }
 
+/* Settings content screen */
 void content_settings(lv_obj_t * screen_content)
 {
     lv_obj_t * settings = lv_obj_create(screen_content);

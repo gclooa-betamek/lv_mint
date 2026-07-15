@@ -41,6 +41,10 @@ extern lv_style_t style_widget_album_art;
 extern lv_style_t style_widget_player;
 extern lv_style_t style_widget_progress;
 
+extern lv_style_t style_widget_keypad;
+extern lv_style_t style_widget_contact;
+extern lv_style_t style_widget_input;
+
 void style_init(void);
 
 #endif
