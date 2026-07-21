@@ -5,14 +5,56 @@
  *  @brief  Utility functions for the LVGL simulator.
  */
 
- #include <stdio.h>
- #include <time.h>
- #include "lvgl/lvgl.h"
- #include "component.h"
- #include "util.h"
+#include <stdio.h>
+#include <time.h>
+#include "lvgl/lvgl.h"
+#include "component.h"
+#include "util.h"
 
- lv_subject_t subject_radio_slider;
- char subject_radio_slider_buffer[8];
+/* Dummy Radio */
+const radio_label_t radio_label[] = {
+    {881, "EIGHT FM", "Yukopi - Kyoufuu All Back"},
+    {893, "Ai FM", "Gorillaz - Tomorrow Comes Today"},
+    {929, "Hitz", "Nightcord at 25:00 - Bad Apple!! feat.SEKAI (Hatsune Miku, Yoisaki Kanade, Asahina Mafuyu, Shinonome Ena, Akiyama Mizuki)"},
+    {945, "Mix", "Moe Shop - Notice (feat. TORIENA)"},
+    {958, "Fly FM", "Have a Nice Life - Bloodhail"},
+    {1033, "Era", "Nine Inch Nails - Head Like A Hole"}
+};
+
+/* Dummy media */
+const media_label_t media_label[] = {
+    {"Ruler of Everything", "Tally Hall"},
+    {"Dreams (2004 Remaster)", "Fleetwood Mac"},
+    {"Can I friend you on Bassbook? lol", "Nanahira & Camellia"}
+};
+
+/* Dummy contacts */
+static const contact_info_t contact_info[] = {
+    {"Michael",   "0123456789"},
+    {"Gabriel",   "0123336666"},
+    {"Raphael",   "0125557777"},
+    {"Donatello", "0106668888"},
+    {"Leonardo",  "0169996666"},
+    {"Adam",      "0196669999"},
+    {"Lily",      "0101110000"},
+};
+
+lv_subject_t subject_screen_content;
+lv_subject_t subject_radio_slider_int;
+lv_subject_t subject_radio_slider_str;
+lv_subject_t subject_radio_station;
+lv_subject_t subject_radio_song;
+lv_subject_t subject_media_song;
+lv_subject_t subject_media_artist;
+
+char subject_radio_slider_buffer[8];
+char subject_radio_station_buffer[16];
+char subject_radio_song_buffer[256];
+char subject_media_song_buffer[256];
+char subject_media_artist_buffer[128];
+
+static lv_timer_t * radio_timer = NULL;
+static lv_timer_t * scroll_timer = NULL;
 
 void clock_timer_callback(lv_timer_t * timer)
 {
@@ -27,7 +69,56 @@ void clock_timer_callback(lv_timer_t * timer)
     lv_label_set_text(time_label, tm_buffer);
 }
 
-void button_event_callback(lv_event_t * e)
+void radio_timer_callback(lv_timer_t * timer)
+{
+    printf("DEBUG: radio_timer_callback() fired.\n");
+    int slider_value = lv_slider_get_value(lv_timer_get_user_data(timer));
+
+    snprintf(subject_radio_station_buffer, sizeof(subject_radio_station_buffer), "%s", "Unknown station");
+    snprintf(subject_radio_song_buffer, sizeof(subject_radio_song_buffer), "%s", " ");
+    lv_subject_copy_string(&subject_radio_station, subject_radio_station_buffer);
+    lv_subject_copy_string(&subject_radio_song, subject_radio_song_buffer);
+
+    for (int i = 0; i < sizeof(radio_label) / sizeof(radio_label[0]); i++) {
+        // printf("DEBUG: %d Slider value = %d\n", i, slider_value);
+        // printf("DEBUG: %d Index value  = %d\n", i, radio_label[i].frequency);
+        if (slider_value == radio_label[i].frequency) {
+            snprintf(subject_radio_station_buffer, sizeof(subject_radio_station_buffer), "%s", radio_label[i].station);
+            snprintf(subject_radio_song_buffer, sizeof(subject_radio_song_buffer), "%s", radio_label[i].song);
+            lv_subject_copy_string(&subject_radio_station, subject_radio_station_buffer);
+            lv_subject_copy_string(&subject_radio_song, subject_radio_song_buffer);
+            break;
+        }
+    }
+
+    lv_timer_delete(radio_timer);
+    radio_timer = NULL;
+}
+
+void scroll_timer_callback(lv_timer_t * timer)
+{
+    printf("DEBUG: scroll_timer_callback() fired.\n");
+    label_bundle_t * label_bundle = lv_timer_get_user_data(timer);
+    util_set_long_mode(label_bundle, LV_LABEL_LONG_MODE_SCROLL_CIRCULAR);
+
+    lv_timer_delete(scroll_timer);
+    scroll_timer = NULL;
+}
+
+void screen_observer_callback(lv_observer_t * observer, lv_subject_t * subject)
+{
+    printf("DEBUG: screen_observer_callback() fired.\n");
+    if (scroll_timer) {
+        lv_timer_delete(scroll_timer);
+        scroll_timer = NULL;
+    }
+    label_bundle_t * label_bundle = lv_observer_get_user_data(observer);
+    util_set_long_mode(label_bundle, LV_LABEL_LONG_MODE_CLIP);
+
+    scroll_timer = lv_timer_create(scroll_timer_callback, 1000, label_bundle);
+}
+
+void navbar_event_callback(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     if (code != LV_EVENT_CLICKED) return;
@@ -52,24 +143,40 @@ void button_event_callback(lv_event_t * e)
     lv_obj_add_flag(lv_obj_get_child(screen_content, PHONE), LV_OBJ_FLAG_HIDDEN);
     lv_obj_add_flag(lv_obj_get_child(screen_content, SETTINGS), LV_OBJ_FLAG_HIDDEN);
     lv_obj_remove_flag(content, LV_OBJ_FLAG_HIDDEN);
+
+    /* Update subject with selected screen. */
+    lv_subject_set_int(&subject_screen_content, lv_obj_get_index(content));
 }
 
-void widget_tuner_event_callback(lv_event_t * e)
+void tuner_event_callback(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     if (code != LV_EVENT_VALUE_CHANGED) return;
+
+    if (radio_timer) {
+        lv_timer_delete(radio_timer);
+        radio_timer = NULL;
+    }
+
+    snprintf(subject_radio_station_buffer, sizeof(subject_radio_station_buffer), "%s", "Seeking...");
+    snprintf(subject_radio_song_buffer, sizeof(subject_radio_song_buffer), "%s", " ");
+    lv_subject_copy_string(&subject_radio_station, subject_radio_station_buffer);
+    lv_subject_copy_string(&subject_radio_song, subject_radio_song_buffer);
 
     lv_obj_t * slider = lv_event_get_target(e);
     int slider_value = lv_slider_get_value(slider);
     char slider_value_buffer[8];
     snprintf(slider_value_buffer, sizeof(slider_value_buffer), "%d.%d", slider_value / 10, slider_value % 10);
-    lv_subject_copy_string(&subject_radio_slider, slider_value_buffer);
+    lv_subject_copy_string(&subject_radio_slider_str, slider_value_buffer);
+    lv_subject_set_int(&subject_radio_slider_int, slider_value);
 
-    printf("DEBUG: Slider value  = %s\n", slider_value_buffer);
-    printf("DEBUG: Subject value = %s\n", lv_subject_get_string(&subject_radio_slider));
+    // printf("DEBUG: Slider value  = %s\n", slider_value_buffer);
+    // printf("DEBUG: Subject value = %s\n", lv_subject_get_string(&subject_radio_slider_str));
+
+    radio_timer = lv_timer_create(radio_timer_callback, 1000, slider);
 }
 
-void widget_tuner_draw_callback(lv_event_t * e)
+void tuner_draw_callback(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     if (code != LV_EVENT_DRAW_MAIN) return;
@@ -135,16 +242,41 @@ void widget_tuner_draw_callback(lv_event_t * e)
 
     lv_draw_line(layer, &cursor);
 
-    /* Debug message */
-    printf("DEBUG: widget_tuner_draw_callback() fired.\n");
+    // printf("DEBUG: widget_tuner_draw_callback() fired.\n");
 }
 
-void phone_keypad_event_callback(lv_event_t * e)
+void station_event_callback(lv_event_t * e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    if (code != LV_EVENT_CLICKED) return;
+
+    lv_obj_t * station = lv_event_get_target(e);
+    lv_obj_t * slider = lv_event_get_user_data(e);
+
+    int index = lv_obj_get_index(station);
+    lv_slider_set_value(slider, radio_label[index].frequency, LV_ANIM_ON);
+
+    snprintf(subject_radio_station_buffer, sizeof(subject_radio_station_buffer), "%s", radio_label[index].station);
+    snprintf(subject_radio_song_buffer, sizeof(subject_radio_song_buffer), "%s", radio_label[index].song);
+    lv_subject_copy_string(&subject_radio_station, subject_radio_station_buffer);
+    lv_subject_copy_string(&subject_radio_song, subject_radio_song_buffer);
+}
+
+void keypad_event_callback(lv_event_t * e)
 {
     lv_obj_t * key = lv_event_get_target_obj(e);
     lv_obj_t * textarea = (lv_obj_t *)lv_event_get_user_data(e);
     const char * text = lv_buttonmatrix_get_button_text(key, lv_buttonmatrix_get_selected_button(key));
-    if(lv_strcmp(text, LV_SYMBOL_BACKSPACE) == 0) lv_textarea_delete_char(textarea);
-    else if(lv_strcmp(text, LV_SYMBOL_CALL) == 0) lv_obj_send_event(textarea, LV_EVENT_READY, NULL);
+    if (lv_strcmp(text, LV_SYMBOL_BACKSPACE) == 0) lv_textarea_delete_char(textarea);
+    else if (lv_strcmp(text, LV_SYMBOL_CALL) == 0) lv_obj_send_event(textarea, LV_EVENT_READY, NULL);
     else lv_textarea_add_text(textarea, text);
+}
+
+void util_set_long_mode(label_bundle_t * label_bundle, lv_label_long_mode_t long_mode)
+{
+    lv_label_set_long_mode(label_bundle->radio_frequency, long_mode);
+    lv_label_set_long_mode(label_bundle->radio_station, long_mode);
+    lv_label_set_long_mode(label_bundle->radio_song, long_mode);
+    lv_label_set_long_mode(label_bundle->media_song, long_mode);
+    lv_label_set_long_mode(label_bundle->media_artist, long_mode);
 }

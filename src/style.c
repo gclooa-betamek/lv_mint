@@ -48,6 +48,7 @@ lv_style_t style_navbar_button;
 
 lv_style_t style_widget_channel;
 lv_style_t style_widget_channel_button;
+lv_style_t style_widget_station;
 lv_style_t style_widget_tuner;
 
 lv_style_t style_widget_album_art;
@@ -57,6 +58,7 @@ lv_style_t style_widget_progress;
 lv_style_t style_widget_keypad;
 lv_style_t style_widget_contact;
 lv_style_t style_widget_input;
+lv_style_t style_widget_list;
 
 static bool style_init_flag = false;
 
@@ -171,6 +173,10 @@ void style_init(void)
     lv_style_init(&style_widget_channel_button);
     lv_style_set_bg_grad(&style_widget_channel_button, &grad_dsc_off_white);
 
+    lv_style_init(&style_widget_station);
+    lv_style_set_pad_row(&style_widget_station, 10);
+    lv_style_set_pad_column(&style_widget_station, 10);
+
     lv_style_init(&style_widget_tuner);
     lv_style_set_bg_opa(&style_widget_tuner, LV_OPA_0);
     lv_style_set_pad_all(&style_widget_tuner, 20);
@@ -213,6 +219,11 @@ void style_init(void)
     lv_style_set_border_width(&style_widget_input, 5);
     lv_style_set_pad_top(&style_widget_input, 15);
     lv_style_set_text_align(&style_widget_input, LV_TEXT_ALIGN_CENTER);
+
+    lv_style_init(&style_widget_list);
+    lv_style_set_layout(&style_widget_list, LV_LAYOUT_FLEX);
+    lv_style_set_flex_flow(&style_widget_list, LV_FLEX_FLOW_COLUMN);
+    lv_style_set_bg_opa(&style_widget_list, LV_OPA_0);
 
     style_init_flag = true;
 }

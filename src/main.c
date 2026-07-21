@@ -107,6 +107,8 @@ int main(int argc, char **argv)
   lv_obj_add_style(screen_part[NAVBAR], &style_navbar, LV_PART_MAIN);
   // lv_obj_set_flex_align(screen_part[NAVBAR], LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
+  /* Initialize subjects. */
+  subject_init();
   /* Create statusbar */
   statusbar_init(screen_part[STATUSBAR]);
   /* Create content */

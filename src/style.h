@@ -35,6 +35,7 @@ extern lv_style_t style_navbar_button;
 
 extern lv_style_t style_widget_channel;
 extern lv_style_t style_widget_channel_button;
+extern lv_style_t style_widget_station;
 extern lv_style_t style_widget_tuner;
 
 extern lv_style_t style_widget_album_art;
@@ -44,6 +45,7 @@ extern lv_style_t style_widget_progress;
 extern lv_style_t style_widget_keypad;
 extern lv_style_t style_widget_contact;
 extern lv_style_t style_widget_input;
+extern lv_style_t style_widget_list;
 
 void style_init(void);
 

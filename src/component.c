@@ -12,30 +12,23 @@
 #include "style.h"
 #include "util.h"
 
-static const char * label_navbar_button[SCREEN_CONTENT_COUNT] = {
+static void contact_list(lv_obj_t * list, lv_obj_t * input);
+
+static const char * label_navbar_button[] = {
     LV_SYMBOL_HOME "   Radio",
     LV_SYMBOL_AUDIO "   Media",
     LV_SYMBOL_CALL "   Phone",
     LV_SYMBOL_SETTINGS "   Settings"
 };
 
-static const char * label_channel_button[6] = {
-    "EIGHT FM",
-    "Ai FM",
-    "Hitz",
-    "Mix",
-    "Fly FM",
-    "Era"
-};
-
-static const char * label_radio_button[4] = {
+static const char * label_radio_button[] = {
     LV_SYMBOL_PREV,
     LV_SYMBOL_LEFT,
     LV_SYMBOL_RIGHT,
     LV_SYMBOL_NEXT
 };
 
-static const widget_control_t widget_control_button[5] = {
+static const widget_control_t widget_control_button[] = {
     {80, 0x1a1a1a, 0xffffff, LV_SYMBOL_SHUFFLE},
     {80, 0xffffff, 0x1a1a1a, LV_SYMBOL_PREV},
     {95, 0xffffff, 0x1a1a1a, LV_SYMBOL_PLAY},
@@ -43,13 +36,52 @@ static const widget_control_t widget_control_button[5] = {
     {80, 0x1a1a1a, 0xffffff, LV_SYMBOL_LIST},
 };
 
+static label_bundle_t label_bundle;
+
 static bool statusbar_init_flag = false;
 static bool content_init_flag = false;
 static bool navbar_init_flag = false;
 
-/*******************
+/******************************************************************************
  * MAIN COMPONENTS
- *******************/
+ ******************************************************************************/
+
+/* Initialize subjects. */
+void subject_init()
+{
+    /* Subject for current screen displayed. */
+    lv_subject_init_int(&subject_screen_content, RADIO);
+
+    /* Subject for radio tuner value. */
+    lv_subject_init_int(&subject_radio_slider_int, radio_label[2].frequency);
+    lv_subject_init_string(
+        &subject_radio_slider_str, subject_radio_slider_buffer, NULL,
+        sizeof(subject_radio_slider_buffer), "92.9"
+    );
+
+    /* Subject for radio metadata. */
+    lv_subject_init_string(
+        &subject_radio_station, subject_radio_station_buffer, NULL,
+        sizeof(subject_radio_station_buffer), radio_label[2].station
+    );
+    lv_subject_init_string(
+        &subject_radio_song, subject_radio_song_buffer, NULL,
+        sizeof(subject_radio_song_buffer), radio_label[2].song
+    );
+
+    /* Subject for media metadata. */
+    lv_subject_init_string(
+        &subject_media_song, subject_media_song_buffer, NULL,
+        sizeof(subject_media_song_buffer), media_label[2].song
+    );
+    lv_subject_init_string(
+        &subject_media_artist, subject_media_artist_buffer, NULL,
+        sizeof(subject_media_artist_buffer), media_label[2].artist
+    );
+
+    /* Initialize observer for current screen displayed. */
+    lv_subject_add_observer(&subject_screen_content, screen_observer_callback, &label_bundle);
+}
 
 /* Create status bar elements. */
 void statusbar_init(lv_obj_t * screen_statusbar)
@@ -95,11 +127,6 @@ void content_init(lv_obj_t * screen_content)
 {
     if (content_init_flag) return;
 
-    lv_subject_init_string(
-        &subject_radio_slider, subject_radio_slider_buffer, NULL,
-        sizeof(subject_radio_slider_buffer), "80.0"
-    );
-
     content_radio(screen_content);
     content_media(screen_content);
     content_phone(screen_content);
@@ -141,7 +168,7 @@ void navbar_init(lv_obj_t * screen_navbar)
 
         lv_obj_t * label = lv_label_create(navbar[i]);
         lv_label_set_text(label, label_navbar_button[i]);
-        lv_obj_add_event_cb(navbar[i], button_event_callback, LV_EVENT_ALL, content[i]);
+        lv_obj_add_event_cb(navbar[i], navbar_event_callback, LV_EVENT_CLICKED, content[i]);
         lv_obj_center(label);
     }
     lv_obj_add_state(navbar[RADIO], LV_STATE_CHECKED);
@@ -149,11 +176,11 @@ void navbar_init(lv_obj_t * screen_navbar)
     navbar_init_flag = true;
 }
 
-/*******************
- * CONTENT SCREENS
- *******************/
+/******************************************************************************
+ * SCREEN COMPONENTS
+ ******************************************************************************/
 
-/* Radio content screen */
+/* Radio content screen *******************************************************/
 void content_radio(lv_obj_t * screen_content)
 {
     /* Radio content container */
@@ -168,17 +195,24 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_add_style(widget_channel, &style_base_widget, LV_PART_MAIN);
     lv_obj_add_style(widget_channel, &style_widget_channel, LV_PART_MAIN);
 
-    lv_obj_t * label_channel = lv_label_create(widget_channel);
-    lv_label_bind_text(label_channel, &subject_radio_slider, "%s");
-    lv_obj_set_style_text_font(label_channel, &lv_font_montserrat_48, LV_PART_MAIN);
+    label_bundle.radio_frequency = lv_label_create(widget_channel);
+    lv_label_set_long_mode(label_bundle.radio_frequency, LV_LABEL_LONG_MODE_CLIP);
+    lv_label_bind_text(label_bundle.radio_frequency, &subject_radio_slider_str, "%s");
+    lv_obj_set_style_text_font(label_bundle.radio_frequency, &lv_font_montserrat_48, LV_PART_MAIN);
+    lv_obj_set_size(label_bundle.radio_frequency, LV_PCT(100), LV_SIZE_CONTENT);
 
-    lv_obj_t * label_station = lv_label_create(widget_channel);
-    lv_label_set_text(label_station, "Hitz FM");
-    lv_obj_set_style_text_font(label_station, &lv_font_montserrat_32, LV_PART_MAIN);
+    label_bundle.radio_station = lv_label_create(widget_channel);
+    lv_label_set_long_mode(label_bundle.radio_station, LV_LABEL_LONG_MODE_CLIP);
+    lv_label_bind_text(label_bundle.radio_station, &subject_radio_station, "%s");
+    lv_obj_set_style_text_font(label_bundle.radio_station, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_set_size(label_bundle.radio_station, LV_PCT(100), LV_SIZE_CONTENT);
 
-    lv_obj_t * label_song = lv_label_create(widget_channel);
-    lv_label_set_text(label_song, "Radiohead - Weird Fishes/Arpeggi");
-    lv_obj_set_style_text_font(label_song, &lv_font_montserrat_24, LV_PART_MAIN);
+    label_bundle.radio_song = lv_label_create(widget_channel);
+    lv_label_set_long_mode(label_bundle.radio_song, LV_LABEL_LONG_MODE_CLIP);
+    lv_label_bind_text(label_bundle.radio_song, &subject_radio_song, "%s");
+    lv_obj_set_style_text_font(label_bundle.radio_song, &lv_font_montserrat_24, LV_PART_MAIN);
+    lv_obj_set_style_anim_duration(label_bundle.radio_song, 30000, 0);
+    lv_obj_set_size(label_bundle.radio_song, LV_PCT(100), LV_SIZE_CONTENT);
 
     /* Radio controls */
     for (int i = 0; i < 4; i++) {
@@ -191,22 +225,6 @@ void content_radio(lv_obj_t * screen_content)
         lv_obj_t * label = lv_label_create(widget_channel_button);
         lv_label_set_text(label, label_radio_button[i]);
         lv_obj_center(label);
-    }
-
-    /* Channel buttons */
-    for (int row = 0; row < 3; row++) {
-        for (int col = 0; col < 2; col++) {
-            int index = row * 2 + col;
-            lv_obj_t * button = lv_btn_create(radio);
-            lv_obj_set_grid_cell(button, LV_GRID_ALIGN_STRETCH, col * 2 + 4, 2, LV_GRID_ALIGN_STRETCH, row * 2, 2);
-            lv_obj_add_style(button, &style_base_button, LV_PART_MAIN);
-            lv_obj_add_style(button, &style_base_button_hover, LV_STATE_HOVERED);
-            lv_obj_add_style(button, &style_navbar_button, LV_STATE_CHECKED);
-
-            lv_obj_t * label = lv_label_create(button);
-            lv_label_set_text(label, label_channel_button[index]);
-            lv_obj_center(label);
-        }
     }
 
     /* Tuner widget */
@@ -223,12 +241,36 @@ void content_radio(lv_obj_t * screen_content)
     lv_obj_set_style_bg_opa(widget_tuner_slider, LV_OPA_0, LV_PART_INDICATOR);
     lv_obj_set_style_bg_opa(widget_tuner_slider, LV_OPA_0, LV_PART_KNOB);
     lv_slider_set_range(widget_tuner_slider, 800, 1100);
+    lv_slider_set_value(widget_tuner_slider, 929, LV_ANIM_OFF);
 
-    lv_obj_add_event_cb(widget_tuner_slider, widget_tuner_event_callback, LV_EVENT_VALUE_CHANGED, NULL);
-    lv_obj_add_event_cb(widget_tuner, widget_tuner_draw_callback, LV_EVENT_DRAW_MAIN, NULL);
+    lv_obj_add_event_cb(widget_tuner_slider, tuner_event_callback, LV_EVENT_VALUE_CHANGED, NULL);
+    lv_obj_add_event_cb(widget_tuner, tuner_draw_callback, LV_EVENT_DRAW_MAIN, NULL);
+
+    /* Station buttons */
+    lv_obj_t * widget_station = lv_obj_create(radio);
+    lv_obj_set_layout(widget_station, LV_LAYOUT_GRID);
+    lv_obj_set_grid_cell(widget_station, LV_GRID_ALIGN_STRETCH, 4, 4, LV_GRID_ALIGN_STRETCH, 0, 6);
+    lv_obj_add_style(widget_station, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(widget_station, &style_widget_station, LV_PART_MAIN);
+
+    for (int row = 0; row < 3; row++) {
+        for (int col = 0; col < 2; col++) {
+            int index = row * 2 + col;
+            lv_obj_t * button = lv_btn_create(widget_station);
+            lv_obj_set_grid_cell(button, LV_GRID_ALIGN_STRETCH, col * 2, 2, LV_GRID_ALIGN_STRETCH, row * 2, 2);
+            lv_obj_add_style(button, &style_base_button, LV_PART_MAIN);
+            lv_obj_add_style(button, &style_base_button_hover, LV_STATE_HOVERED);
+            lv_obj_add_style(button, &style_navbar_button, LV_STATE_CHECKED);
+            lv_obj_add_event_cb(button, station_event_callback, LV_EVENT_CLICKED, widget_tuner_slider);
+
+            lv_obj_t * label = lv_label_create(button);
+            lv_label_set_text(label, radio_label[index].station);
+            lv_obj_center(label);
+        }
+    }
 }
 
-/* Media content screen */
+/* Media content screen *******************************************************/
 void content_media(lv_obj_t * screen_content)
 {
     /* Media content container */
@@ -272,13 +314,17 @@ void content_media(lv_obj_t * screen_content)
     lv_obj_set_height(player, LV_PCT(90));
 
     /* Player metadata */
-    lv_obj_t * label_song_name = lv_label_create(player);
-    lv_label_set_text(label_song_name, "High Speed");
-    lv_obj_set_style_text_font(label_song_name, &lv_font_montserrat_48, LV_PART_MAIN);
+    label_bundle.media_song = lv_label_create(player);
+    lv_label_set_long_mode(label_bundle.media_song, LV_LABEL_LONG_MODE_CLIP);
+    lv_label_set_text(label_bundle.media_song, media_label[2].song);
+    lv_obj_set_style_text_font(label_bundle.media_song, &lv_font_montserrat_48, LV_PART_MAIN);
+    lv_obj_set_size(label_bundle.media_song, LV_PCT(100), LV_SIZE_CONTENT);
 
-    lv_obj_t * label_song_artist = lv_label_create(player);
-    lv_label_set_text(label_song_artist, "Coldplay");
-    lv_obj_set_style_text_font(label_song_artist, &lv_font_montserrat_32, LV_PART_MAIN);
+    label_bundle.media_artist = lv_label_create(player);
+    lv_label_set_long_mode(label_bundle.media_artist, LV_LABEL_LONG_MODE_CLIP);
+    lv_label_set_text(label_bundle.media_artist, media_label[2].artist);
+    lv_obj_set_style_text_font(label_bundle.media_artist, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_set_size(label_bundle.media_artist, LV_PCT(100), LV_SIZE_CONTENT);
 
     /* Player progress bar */
     lv_obj_t * widget_progress = lv_obj_create(player);
@@ -334,7 +380,7 @@ void content_media(lv_obj_t * screen_content)
     }
 }
 
-/* Phone content screen */
+/* Phone content screen *******************************************************/
 void content_phone(lv_obj_t * screen_content)
 {
     /* Phone content container */
@@ -382,10 +428,18 @@ void content_phone(lv_obj_t * screen_content)
     lv_obj_set_scrollbar_mode(input, LV_SCROLLBAR_MODE_OFF);
 
     lv_textarea_set_one_line(input, true);
-    lv_obj_add_event_cb(keypad, phone_keypad_event_callback, LV_EVENT_VALUE_CHANGED, input);
+    lv_obj_add_event_cb(keypad, keypad_event_callback, LV_EVENT_VALUE_CHANGED, input);
+
+    /* Contact list container */
+    /* NOTE: Hardcoded for now, an interface to real data will be implemented in a future file. */
+    lv_obj_t * list = lv_obj_create(contact);
+    lv_obj_set_grid_cell(list, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 1, 3);
+    lv_obj_add_style(list, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(list, &style_widget_list, LV_PART_MAIN);
+    contact_list(list, input);
 }
 
-/* Settings content screen */
+/* Settings content screen ****************************************************/
 void content_settings(lv_obj_t * screen_content)
 {
     lv_obj_t * settings = lv_obj_create(screen_content);
@@ -394,4 +448,18 @@ void content_settings(lv_obj_t * screen_content)
 
     lv_obj_t * label = lv_label_create(settings);
     lv_label_set_text(label, "Settings");
+}
+
+/******************************************************************************
+ * MISCELLANEOUS HELPER COMPONENTS
+ ******************************************************************************/
+
+/* Contact cards */
+static void contact_list(lv_obj_t * list, lv_obj_t * input)
+{
+    lv_obj_t * card = lv_obj_create(list);
+    lv_obj_set_size(card, LV_PCT(100), lv_obj_get_height(input));
+    lv_obj_add_style(card, &style_base_button, LV_PART_MAIN);
+    lv_obj_set_style_text_font(card, &lv_font_montserrat_32, LV_PART_MAIN);
+    lv_obj_set_style_text_color(card, lv_color_hex(0xffffff), LV_PART_MAIN);
 }

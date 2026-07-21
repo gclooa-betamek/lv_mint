@@ -39,12 +39,21 @@ typedef enum {
 } widget_control_index_t;
 
 typedef struct {
-    int32_t size;
-    uint32_t bg_color;
-    uint32_t text_color;
+    int32_t      size;
+    uint32_t     bg_color;
+    uint32_t     text_color;
     const char * label;
 } widget_control_t;
 
+typedef struct {
+    lv_obj_t   * radio_frequency;
+    lv_obj_t   * radio_station;
+    lv_obj_t   * radio_song;
+    lv_obj_t   * media_song;
+    lv_obj_t   * media_artist;
+} label_bundle_t;
+
+void subject_init();
 void statusbar_init(lv_obj_t * screen_statusbar);
 void content_init(lv_obj_t * screen_content);
 void navbar_init(lv_obj_t * screen_navbar);
