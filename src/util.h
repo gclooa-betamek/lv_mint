@@ -27,6 +27,8 @@ typedef struct {
 
 extern const radio_label_t radio_label[];
 extern const media_label_t media_label[];
+extern const contact_info_t contact_info[];
+extern const size_t contact_info_count;
 
 extern lv_subject_t subject_screen_content;
 extern lv_subject_t subject_radio_slider_int;

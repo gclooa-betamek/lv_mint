@@ -29,7 +29,7 @@ const media_label_t media_label[] = {
 };
 
 /* Dummy contacts */
-static const contact_info_t contact_info[] = {
+const contact_info_t contact_info[] = {
     {"Michael",   "0123456789"},
     {"Gabriel",   "0123336666"},
     {"Raphael",   "0125557777"},
@@ -38,6 +38,7 @@ static const contact_info_t contact_info[] = {
     {"Adam",      "0196669999"},
     {"Lily",      "0101110000"},
 };
+const size_t contact_info_count = sizeof(contact_info) / sizeof(contact_info[0]);
 
 lv_subject_t subject_screen_content;
 lv_subject_t subject_radio_slider_int;
@@ -255,6 +256,12 @@ void station_event_callback(lv_event_t * e)
 
     int index = lv_obj_get_index(station);
     lv_slider_set_value(slider, radio_label[index].frequency, LV_ANIM_ON);
+
+    int slider_value = lv_slider_get_value(slider);
+    char slider_value_buffer[8];
+    snprintf(slider_value_buffer, sizeof(slider_value_buffer), "%d.%d", slider_value / 10, slider_value % 10);
+    lv_subject_copy_string(&subject_radio_slider_str, slider_value_buffer);
+    lv_subject_set_int(&subject_radio_slider_int, slider_value);
 
     snprintf(subject_radio_station_buffer, sizeof(subject_radio_station_buffer), "%s", radio_label[index].station);
     snprintf(subject_radio_song_buffer, sizeof(subject_radio_song_buffer), "%s", radio_label[index].song);

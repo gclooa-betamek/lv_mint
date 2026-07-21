@@ -224,6 +224,7 @@ void style_init(void)
     lv_style_set_layout(&style_widget_list, LV_LAYOUT_FLEX);
     lv_style_set_flex_flow(&style_widget_list, LV_FLEX_FLOW_COLUMN);
     lv_style_set_bg_opa(&style_widget_list, LV_OPA_0);
+    lv_style_set_pad_row(&style_widget_list, 10);
 
     style_init_flag = true;
 }
