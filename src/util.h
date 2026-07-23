@@ -54,6 +54,8 @@ void tuner_event_callback(lv_event_t * e);
 void tuner_draw_callback(lv_event_t * e);
 void station_event_callback(lv_event_t * e);
 void keypad_event_callback(lv_event_t * e);
+void search_event_callback(lv_event_t * e);
+void contact_event_callback(lv_event_t * e);
 
 void util_set_long_mode(label_bundle_t * label_bundle, lv_label_long_mode_t long_mode);
 

@@ -59,6 +59,7 @@ lv_style_t style_widget_keypad;
 lv_style_t style_widget_contact;
 lv_style_t style_widget_input;
 lv_style_t style_widget_list;
+lv_style_t style_widget_card;
 
 static bool style_init_flag = false;
 
@@ -225,6 +226,9 @@ void style_init(void)
     lv_style_set_flex_flow(&style_widget_list, LV_FLEX_FLOW_COLUMN);
     lv_style_set_bg_opa(&style_widget_list, LV_OPA_0);
     lv_style_set_pad_row(&style_widget_list, 10);
+
+    lv_style_init(&style_widget_card);
+    lv_style_set_bg_color(&style_widget_card, lv_color_make(0, 0, 0));
 
     style_init_flag = true;
 }

@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include "lvgl/lvgl.h"
 #include "component.h"
@@ -277,6 +278,37 @@ void keypad_event_callback(lv_event_t * e)
     if (lv_strcmp(text, LV_SYMBOL_BACKSPACE) == 0) lv_textarea_delete_char(textarea);
     else if (lv_strcmp(text, LV_SYMBOL_CALL) == 0) lv_obj_send_event(textarea, LV_EVENT_READY, NULL);
     else lv_textarea_add_text(textarea, text);
+}
+
+void search_event_callback(lv_event_t * e)
+{
+    lv_obj_t * textarea = lv_event_get_target(e);
+    lv_obj_t * list = lv_event_get_user_data(e);
+    const char * search = lv_textarea_get_text(textarea);
+
+    lv_obj_scroll_to(list, 0, 0, LV_ANIM_OFF);
+
+    for (size_t i = 0; i < contact_info_count; i++) {
+        lv_obj_t * card = lv_obj_get_child(list, i);
+        if (strstr(contact_info[i].number, search))
+            lv_obj_set_flag(card, LV_OBJ_FLAG_HIDDEN, false);
+        else
+            lv_obj_set_flag(card, LV_OBJ_FLAG_HIDDEN, true);
+    }
+}
+
+void contact_event_callback(lv_event_t * e)
+{
+    lv_event_code_t code = lv_event_get_code(e);
+    if (code != LV_EVENT_CLICKED) return;
+
+    lv_obj_t * card = lv_event_get_target(e);
+    lv_obj_t * textarea = (lv_obj_t *)lv_event_get_user_data(e);
+    const char * number = contact_info[lv_obj_get_index(card)].number;
+
+    printf("DEBUG: Contact selected: %s\n", number);
+    lv_textarea_set_text(textarea, "");
+    lv_textarea_add_text(textarea, number);
 }
 
 void util_set_long_mode(label_bundle_t * label_bundle, lv_label_long_mode_t long_mode)

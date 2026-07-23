@@ -409,7 +409,7 @@ void content_phone(lv_obj_t * screen_content)
     };
     lv_buttonmatrix_set_map(keypad, map);
 
-    /* Contact list container */
+    /* Contact container */
     lv_obj_t * contact = lv_obj_create(phone);
     lv_obj_add_style(contact, &style_base, LV_PART_MAIN);
     lv_obj_add_style(contact, &style_base_widget, LV_PART_MAIN);
@@ -417,7 +417,7 @@ void content_phone(lv_obj_t * screen_content)
     lv_obj_set_height(contact, LV_PCT(90));
     lv_obj_set_flex_grow(contact, 1);
 
-    /* Contact list input field */
+    /* Contact input field */
     lv_obj_t * input = lv_textarea_create(contact);
     lv_obj_set_grid_cell(input, LV_GRID_ALIGN_STRETCH, 0, 1, LV_GRID_ALIGN_STRETCH, 0, 1);
     lv_obj_add_style(input, &style_base_button, LV_PART_MAIN);
@@ -437,7 +437,9 @@ void content_phone(lv_obj_t * screen_content)
     lv_obj_set_style_bg_color(list, lv_color_hex(0x202020), LV_PART_SCROLLBAR);
     lv_obj_add_style(list, &style_base, LV_PART_MAIN);
     lv_obj_add_style(list, &style_widget_list, LV_PART_MAIN);
+
     contact_list(list, input);
+    lv_obj_add_event_cb(input, search_event_callback, LV_EVENT_VALUE_CHANGED, list);
 }
 
 /* Settings content screen ****************************************************/
@@ -460,41 +462,46 @@ static void contact_list(lv_obj_t * list, lv_obj_t * input)
 {
     int card_height = lv_obj_get_height(input);
     for (int i = 0; i < contact_info_count; i++) {
-        lv_obj_t * card = lv_obj_create(list);
+        lv_obj_t * card = lv_button_create(list);
         lv_obj_set_layout(card, LV_LAYOUT_FLEX);
         lv_obj_set_flex_flow(card, LV_FLEX_FLOW_ROW);
         lv_obj_set_flex_align(card, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
         lv_obj_set_size(card, LV_PCT(100), card_height);
-        lv_obj_add_style(card, &style_base, LV_PART_MAIN);
         lv_obj_set_style_text_font(card, &lv_font_montserrat_32, LV_PART_MAIN);
         lv_obj_set_style_text_color(card, lv_color_hex(0xffffff), LV_PART_MAIN);
         lv_obj_set_style_pad_hor(card, 20, LV_PART_MAIN);
+        lv_obj_add_style(card, &style_base_button, LV_PART_MAIN);
+        lv_obj_add_style(card, &style_widget_card, LV_PART_MAIN);
+        lv_obj_add_flag(card, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_add_event_cb(card, contact_event_callback, LV_EVENT_CLICKED, input);
 
         lv_obj_t * icon = lv_obj_create(card);
         lv_obj_set_size(icon, card_height * 0.95, card_height * 0.95);
         lv_obj_set_style_radius(icon, LV_RADIUS_CIRCLE, LV_PART_MAIN);
         lv_obj_add_style(icon, &style_base_button, LV_PART_MAIN);
         lv_obj_add_style(icon, &style_widget_input, LV_PART_MAIN);
+        lv_obj_remove_flag(icon, LV_OBJ_FLAG_CLICKABLE);
 
         lv_obj_t * info = lv_obj_create(card);
         lv_obj_set_layout(info, LV_LAYOUT_FLEX);
         lv_obj_set_flex_flow(info, LV_FLEX_FLOW_COLUMN);
-        lv_obj_set_flex_align(info, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+        lv_obj_set_flex_align(info, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
         lv_obj_set_flex_grow(info, 1);
         lv_obj_set_height(info, card_height * 0.95);
         lv_obj_set_style_pad_hor(info, 30, LV_PART_MAIN);
         lv_obj_add_style(info, &style_base, LV_PART_MAIN);
+        lv_obj_remove_flag(info, LV_OBJ_FLAG_CLICKABLE);
 
         lv_obj_t * name = lv_label_create(info);
         lv_obj_set_style_text_font(name, &lv_font_montserrat_32, LV_PART_MAIN);
         lv_obj_set_style_text_color(name, lv_color_hex(0xffffff), LV_PART_MAIN);
         lv_obj_set_width(name, LV_PCT(100));
-        lv_label_set_text(name, "John Doe");
+        lv_label_set_text(name, contact_info[i].name);
 
         lv_obj_t * number = lv_label_create(info);
         lv_obj_set_style_text_font(number, &lv_font_montserrat_24, LV_PART_MAIN);
         lv_obj_set_style_text_color(number, lv_color_hex(0xf7f7f7), LV_PART_MAIN);
         lv_obj_set_width(number, LV_PCT(100));
-        lv_label_set_text(number, "5551234567");
+        lv_label_set_text(number, contact_info[i].number);
     }
 }

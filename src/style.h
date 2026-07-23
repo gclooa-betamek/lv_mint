@@ -46,6 +46,7 @@ extern lv_style_t style_widget_keypad;
 extern lv_style_t style_widget_contact;
 extern lv_style_t style_widget_input;
 extern lv_style_t style_widget_list;
+extern lv_style_t style_widget_card;
 
 void style_init(void);
 
