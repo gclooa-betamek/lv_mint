@@ -27,6 +27,14 @@ static const int32_t grid_row_dsc_contact[] = {
     LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
     LV_GRID_TEMPLATE_LAST
 };
+static const int32_t grid_col_dsc_settings[] = {
+    LV_GRID_FR(1), LV_GRID_FR(1),
+    LV_GRID_TEMPLATE_LAST
+};
+static const int32_t grid_row_dsc_settings[] = {
+    LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1), LV_GRID_FR(1),
+    LV_GRID_TEMPLATE_LAST
+};
 
 lv_style_t style_base;
 lv_style_t style_base_button;
@@ -61,6 +69,8 @@ lv_style_t style_widget_input;
 lv_style_t style_widget_list;
 lv_style_t style_widget_card;
 
+lv_style_t style_widget_settings;
+
 static bool style_init_flag = false;
 
 void style_init(void)
@@ -73,8 +83,8 @@ void style_init(void)
      */
     lv_style_init(&style_base);
     lv_style_set_text_font(&style_base, &lv_font_montserrat_24);
-    lv_style_set_text_color(&style_base, lv_color_make(255, 255, 255));
-    lv_style_set_bg_color(&style_base, lv_color_make(0, 0, 0));
+    lv_style_set_text_color(&style_base, lv_color_hex(0xffffff));
+    lv_style_set_bg_color(&style_base, lv_color_hex(0x000000));
     lv_style_set_border_width(&style_base, 0);
     lv_style_set_radius(&style_base, 0);
     lv_style_set_pad_all(&style_base, 0);
@@ -83,7 +93,8 @@ void style_init(void)
 
     lv_style_init(&style_base_button);
     lv_style_set_bg_color(&style_base_button, lv_color_hex(0x1a1a1a));
-    lv_style_set_border_width(&style_base_button, 0);
+    lv_style_set_border_width(&style_base_button, 5);
+    lv_style_set_border_color(&style_base_button, lv_color_hex(0x1a1a1a));
     lv_style_set_radius(&style_base_button, 20);
     lv_style_set_shadow_color(&style_base_button, lv_color_hex(0x000000));
     lv_style_set_shadow_width(&style_base_button, 0);
@@ -92,7 +103,7 @@ void style_init(void)
 
     lv_style_init(&style_base_button_hover);
     lv_style_set_border_width(&style_base_button_hover, 5);
-    lv_style_set_border_color(&style_base_button_hover, lv_color_make(255, 255, 255));
+    lv_style_set_border_color(&style_base_button_hover, lv_color_hex(0xffffff));
 
     lv_style_init(&style_base_widget);
     lv_style_set_bg_color(&style_base_widget, lv_color_hex(0x1a1a1a));
@@ -144,6 +155,8 @@ void style_init(void)
     lv_style_set_flex_flow(&style_content_phone, LV_FLEX_FLOW_ROW);
 
     lv_style_init(&style_content_settings);
+    lv_style_set_layout(&style_content_settings, LV_LAYOUT_FLEX);
+    lv_style_set_flex_flow(&style_content_settings, LV_FLEX_FLOW_COLUMN);
 
     /**
      * NAVIGATION BAR STYLES
@@ -157,7 +170,7 @@ void style_init(void)
     lv_style_set_pad_column(&style_navbar, 10);
 
     lv_style_init(&style_navbar_button);
-    lv_style_set_text_color(&style_navbar_button, lv_color_make(0, 0, 0));
+    lv_style_set_text_color(&style_navbar_button, lv_color_hex(0x000000));
     lv_style_set_bg_grad(&style_navbar_button, &grad_dsc_button);
 
     /**
@@ -228,7 +241,18 @@ void style_init(void)
     lv_style_set_pad_row(&style_widget_list, 10);
 
     lv_style_init(&style_widget_card);
-    lv_style_set_bg_color(&style_widget_card, lv_color_make(0, 0, 0));
+    lv_style_set_bg_color(&style_widget_card, lv_color_hex(0x000000));
+    lv_style_set_border_color(&style_widget_card, lv_color_hex(0x000000));
+
+    /**
+     * SETTINGS WIDGET STYLES
+     */
+    lv_style_init(&style_widget_settings);
+    lv_style_set_layout(&style_widget_settings, LV_LAYOUT_GRID);
+    lv_style_set_grid_column_dsc_array(&style_widget_settings, grid_col_dsc_settings);
+    lv_style_set_grid_row_dsc_array(&style_widget_settings, grid_row_dsc_settings);
+    lv_style_set_pad_row(&style_widget_settings, 10);
+    lv_style_set_pad_column(&style_widget_settings, 10);
 
     style_init_flag = true;
 }

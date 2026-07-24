@@ -48,6 +48,8 @@ extern lv_style_t style_widget_input;
 extern lv_style_t style_widget_list;
 extern lv_style_t style_widget_card;
 
+extern lv_style_t style_widget_settings;
+
 void style_init(void);
 
 #endif

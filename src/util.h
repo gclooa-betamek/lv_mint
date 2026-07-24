@@ -25,10 +25,19 @@ typedef struct {
     const char * number;
 } contact_info_t;
 
+typedef struct {
+    const char * icon;
+    const char * category;
+    const char * description;
+} settings_label_t;
+
 extern const radio_label_t radio_label[];
 extern const media_label_t media_label[];
 extern const contact_info_t contact_info[];
+extern const settings_label_t settings_label[];
+
 extern const size_t contact_info_count;
+extern const size_t settings_label_count;
 
 extern lv_subject_t subject_screen_content;
 extern lv_subject_t subject_radio_slider_int;

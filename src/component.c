@@ -448,9 +448,62 @@ void content_settings(lv_obj_t * screen_content)
     lv_obj_t * settings = lv_obj_create(screen_content);
     lv_obj_add_style(settings, &style_base, LV_PART_MAIN);
     lv_obj_add_style(settings, &style_content_part, LV_PART_MAIN);
+    lv_obj_add_style(settings, &style_content_settings, LV_PART_MAIN);
 
-    lv_obj_t * label = lv_label_create(settings);
-    lv_label_set_text(label, "Settings");
+    lv_obj_t * container = lv_obj_create(settings);
+    lv_obj_set_size(container, LV_PCT(100), LV_PCT(90));
+    lv_obj_add_style(container, &style_base, LV_PART_MAIN);
+    lv_obj_add_style(container, &style_widget_settings, LV_PART_MAIN);
+
+    for (int row = 0; row < 4; row++) {
+        for (int col = 0; col < 2; col++) {
+            int index = row * 2 + col;
+            lv_obj_t * button = lv_btn_create(container);
+            lv_obj_set_grid_cell(button, LV_GRID_ALIGN_STRETCH, col, 1, LV_GRID_ALIGN_STRETCH, row, 1);
+            lv_obj_set_layout(button, LV_LAYOUT_FLEX);
+            lv_obj_set_flex_flow(button, LV_FLEX_FLOW_ROW);
+            lv_obj_set_flex_align(button, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+            lv_obj_set_style_pad_all(button, 10, LV_PART_MAIN);
+            lv_obj_add_style(button, &style_base_button, LV_PART_MAIN);
+            lv_obj_add_style(button, &style_base_button_hover, LV_STATE_HOVERED);
+            // lv_obj_add_event_cb(button, setting_event_callback, LV_EVENT_CLICKED, NULL); // To be implemented;
+            lv_obj_update_layout(button);
+
+            lv_obj_t * icon = lv_obj_create(button);
+            lv_obj_set_size(icon, lv_obj_get_content_height(button), lv_obj_get_content_height(button));
+            lv_obj_set_style_radius(icon, 20, LV_PART_MAIN);
+            lv_obj_add_style(icon, &style_base, LV_PART_MAIN);
+            lv_obj_remove_flag(icon, LV_OBJ_FLAG_CLICKABLE);
+            lv_obj_t * symbol = lv_label_create(icon);
+            lv_obj_set_style_text_font(symbol, &lv_font_montserrat_32, LV_PART_MAIN);
+            lv_label_set_text(symbol, settings_label[index].icon);
+            lv_obj_center(symbol);
+
+            lv_obj_t * info = lv_obj_create(button);
+            lv_obj_set_layout(info, LV_LAYOUT_FLEX);
+            lv_obj_set_flex_flow(info, LV_FLEX_FLOW_COLUMN);
+            lv_obj_set_flex_align(info, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+            lv_obj_set_flex_grow(info, 1);
+            lv_obj_set_height(info, LV_PCT(100));
+            lv_obj_set_scrollbar_mode(button, LV_SCROLLBAR_MODE_OFF);
+            lv_obj_set_style_pad_hor(info, 30, LV_PART_MAIN);
+            lv_obj_set_style_bg_opa(info, LV_OPA_0, LV_PART_MAIN);
+            lv_obj_add_style(info, &style_base, LV_PART_MAIN);
+            lv_obj_remove_flag(info, LV_OBJ_FLAG_CLICKABLE);
+
+            lv_obj_t * category = lv_label_create(info);
+            lv_obj_set_size(category, LV_PCT(100), LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(category, &lv_font_montserrat_24, LV_PART_MAIN);
+            lv_obj_set_style_text_color(category, lv_color_hex(0xffffff), LV_PART_MAIN);
+            lv_label_set_text(category, settings_label[index].category);
+
+            lv_obj_t * description = lv_label_create(info);
+            lv_obj_set_size(description, LV_PCT(100), LV_SIZE_CONTENT);
+            lv_obj_set_style_text_font(description, &lv_font_montserrat_18, LV_PART_MAIN);
+            lv_obj_set_style_text_color(description, lv_color_hex(0xf7f7f7), LV_PART_MAIN);
+            lv_label_set_text(description, settings_label[index].description);
+        }
+    }
 }
 
 /******************************************************************************

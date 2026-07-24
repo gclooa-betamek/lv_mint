@@ -1,6 +1,9 @@
-# Customized LVGL Simulator Project for Windows
+# Project Mint LVGL Simulator for Windows
 
-This project is a pre-configured and pre-built example of a working LVGL Simulator on Windows. Solely setting up the project according to the sparse (and frankly, incomplete) documentation will result in CMake configuration errors and an undetectable SDL installation. The following are the steps taken to *actually* get the project to compile on Windows.
+This project is a pre-configured and pre-built example of a working LVGL Simulator on Windows. Solely setting up the project according to the sparse (and frankly, incomplete) documentation will result in CMake configuration errors and an undetectable SDL installation.
+Pre-built packages can be found on the [releases](https://github.com/gclooa-betamek/lv_mint/releases) page.
+
+The following are the steps taken to *actually* get the project to compile on Windows.
 
 1. Clone the PC project and the related sub modules:
 

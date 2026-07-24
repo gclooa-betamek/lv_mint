@@ -41,6 +41,19 @@ const contact_info_t contact_info[] = {
 };
 const size_t contact_info_count = sizeof(contact_info) / sizeof(contact_info[0]);
 
+const settings_label_t settings_label[] = {
+    {LV_SYMBOL_VOLUME_MID, "Audio", "Volume and equalizer"},
+    {LV_SYMBOL_IMAGE, "Display", "Brightness and theme"},
+    {LV_SYMBOL_BLUETOOTH, "Connectivity", "Bluetooth and devices"},
+    {LV_SYMBOL_SETTINGS, "System", "Language, date and time"},
+    {LV_SYMBOL_DIRECTORY, "Placeholder", ""},
+    {LV_SYMBOL_DIRECTORY, "Placeholder", ""},
+    {LV_SYMBOL_DIRECTORY, "Placeholder", ""},
+    {LV_SYMBOL_DIRECTORY, "Placeholder", ""},
+};
+const size_t settings_label_count = sizeof(settings_label) / sizeof(settings_label[0]);
+
+
 lv_subject_t subject_screen_content;
 lv_subject_t subject_radio_slider_int;
 lv_subject_t subject_radio_slider_str;
@@ -219,8 +232,8 @@ void tuner_draw_callback(lv_event_t * e)
         marker.round_end = 1;
 
         bool major = (freq % 100) == 0;
-        if(major) marker.color = lv_color_make(0x2b, 0x2b, 0x2b);
-        else marker.color = lv_color_make(0x1a, 0x1a, 0x1a);
+        if(major) marker.color = lv_color_hex(0x2b2b2b);
+        else marker.color = lv_color_hex(0x1a1a1a);
 
         lv_draw_line(layer, &marker);
     }
@@ -240,7 +253,7 @@ void tuner_draw_callback(lv_event_t * e)
     cursor.width = 7;
     cursor.round_start = 1;
     cursor.round_end = 1;
-    cursor.color = lv_color_make(255, 0, 0);
+    cursor.color = lv_color_hex(0xff0000);
 
     lv_draw_line(layer, &cursor);
 
